@@ -1,7 +1,10 @@
 window.onload = function() {
   (function tick(state, time) {
-    gfxRender(document.getElementById('canvas'), (time/10)%100)
+    state.time = time / 1000
+    gfxRender(document.getElementById('canvas'), state)
     window.requestAnimationFrame(tick.bind(null, state))
-  })()
+  })({
+    time: 0
+  })
 }
 
