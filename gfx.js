@@ -11,10 +11,15 @@ function gfxRender(state) {
 
   var buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, state.time/2 % 1, .9]), gl.STATIC_DRAW)
+  var points = []
+  for(var i=0; i<8; i++) {
+    var a = Math.PI * 2 / 8 * i + state.time
+    points.push(vectorFromAngle(a).mul(.5))
+  }
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points.flatten()), gl.STATIC_DRAW)
   gl.vertexAttribPointer(program.attribute.pos, 2, gl.FLOAT, false, 0, 0)
   gl.enableVertexAttribArray(program.attribute.pos)
-  gl.drawArrays(gl.LINE_STRIP, 0, 2)
+  gl.drawArrays(gl.LINE_STRIP, 0, points.length)
   gl.deleteBuffer(buffer)
 }
 
