@@ -32,3 +32,10 @@ function vectorFromAngle(a) {
 Array.prototype.flatten = function() {
   return this.concat.apply([], this)
 }
+
+function range(n) {
+  var a = []
+  for (var i=0; i<n; i++)
+    a.push(i)
+  return a
+}

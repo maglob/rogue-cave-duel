@@ -7,20 +7,21 @@ function gfxRender(state) {
   gl.clear(gl.COLOR_BUFFER_BIT)
 
   gl.useProgram(program.id)
+  gl.enableVertexAttribArray(program.attribute.pos)
   gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
 
-  var buffer = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-  var points = []
-  for(var i=0; i<8; i++) {
-    var a = Math.PI * 2 / 8 * i + state.time
-    points.push(vectorFromAngle(a).mul(.5))
+  drawArray(range(8).map(function(i) {
+    return vectorFromAngle(Math.PI * 2 / 8 * i + state.time).mul(.5)
+  }), gl.LINE_STRIP)
+
+  function drawArray(points, mode) {
+    var buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points.flatten()), gl.STREAM_DRAW)
+    gl.vertexAttribPointer(program.attribute.pos, 2, gl.FLOAT, false, 0, 0)
+    gl.drawArrays(mode, 0, points.length)
+    gl.deleteBuffer(buffer)
   }
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points.flatten()), gl.STATIC_DRAW)
-  gl.vertexAttribPointer(program.attribute.pos, 2, gl.FLOAT, false, 0, 0)
-  gl.enableVertexAttribArray(program.attribute.pos)
-  gl.drawArrays(gl.LINE_STRIP, 0, points.length)
-  gl.deleteBuffer(buffer)
 }
 
 function gfxInitialize(canvas, shaders) {
