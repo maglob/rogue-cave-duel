@@ -1,9 +1,18 @@
 function gameUpdate(state, dt) {
   state.sprites.forEach(function(s) {
-    s.pos = s.pos.add(s.v.mul(dt))
-    s.angle += s.angleV * dt
-    if (s.pos[0] < -300 || s.pos[0] > 300)
-      s.v = s.v.mul(-1)
+    if (s.playerInput) {
+      if (s.playerInput.left)
+        s.angle += 4 * dt
+      if (s.playerInput.right)
+        s.angle -= 4 * dt
+      if (s.playerInput.thrust)
+        s.pos = s.pos.add(vectorFromAngle(s.angle).mul(100 * dt))
+    } else {
+      s.pos = s.pos.add(s.v.mul(dt))
+      s.angle += s.angleV * dt
+      if (s.pos[0] < -300 || s.pos[0] > 300)
+        s.v = s.v.mul(-1)
+    }
   })
 
   return {
@@ -12,11 +21,15 @@ function gameUpdate(state, dt) {
   }
 }
 
-function gameInitialize() {
+function gameInitialize(playerInput) {
   var meshOctagon = new Mesh(regularPolygon(8))
+  var meshShip = new Mesh([[-5, 9], [20, 0], [-5, -9]])
+  var ship = new Sprite(meshShip)
+  ship.playerInput = playerInput
   return {
     time: 0,
     sprites: [
+      ship,
       new Sprite(
         meshOctagon.scale(200),
         [0, 0], [100, 0],

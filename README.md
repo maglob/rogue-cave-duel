@@ -4,6 +4,13 @@ Dueling space ships in 2D caves.
 
 Influenced by Thrust, Gravity Force and XPilot
 
+[Live demo](http://maglob.github.io/rogue-cave-duel)
+
+Controls
+* A - Turn left
+* D - Turn right
+* W - Thrust
+
 Concept
 * Playable locally with a modern browser
 * Groovy vector display graphics with WebGL shaders
@@ -11,5 +18,3 @@ Concept
 * Local multiplayer
 * Standalone, no dependencies to third party libraries
 * Incremental, diary like development with hopefully a commit every day
-
-[Live demo](http://maglob.github.io/rogue-cave-duel)

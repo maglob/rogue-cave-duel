@@ -12,7 +12,7 @@ function gfxRender(gl, program, state) {
     gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
     var matrix = baseMatrix.mul(Matrix.translate(s.pos[0], s.pos[1])).mul(Matrix.rotate(s.angle))
     gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
-    drawArray(s.mesh.vertices, gl.LINE_STRIP)
+    drawArray(s.mesh.vertices, gl.LINE_LOOP)
   })
 
   function drawArray(points, mode) {
