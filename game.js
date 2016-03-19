@@ -17,6 +17,7 @@ function gameUpdate(state, dt) {
 
   return {
     time: state.time + dt,
+    cave: state.cave,
     sprites: state.sprites
   }
 }
@@ -28,6 +29,10 @@ function gameInitialize(playerInput) {
   ship.playerInput = playerInput
   return {
     time: 0,
+    cave: [
+      [-400, -300], [-300, 0], [-350, 100], [-100, 200], [0, 320], [100, 280], [400, 230], [500, 0], [400, -50],
+      [300, 0], [200, -100], [50, -50], [0, -70], [-100, -200], [-150, -300], [-300, -350]
+    ],
     sprites: [
       ship,
       new Sprite(

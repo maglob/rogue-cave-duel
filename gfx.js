@@ -8,6 +8,10 @@ function gfxRender(gl, program, state) {
   gl.enableVertexAttribArray(program.attribute.pos)
   gl.lineWidth(2)
 
+  gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
+  gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
+  drawArray(state.cave, gl.LINE_LOOP)
+
   state.sprites.forEach(function(s) {
     gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
     var matrix = baseMatrix.mul(Matrix.translate(s.pos[0], s.pos[1])).mul(Matrix.rotate(s.angle))
