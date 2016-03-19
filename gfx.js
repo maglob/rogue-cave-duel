@@ -1,8 +1,5 @@
 
-function gfxRender(state) {
-  var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
-  if (!gl.isInitialized)
-    throw new Error("gfxInitialize() not called")
+function gfxRender(gl, program, state) {
   gl.clearColor(1, 0, 0, 1)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
@@ -27,8 +24,11 @@ function gfxRender(state) {
 
 function gfxInitialize(canvas, shaders) {
   var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
-  program = createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos'])
-  gl.isInitialized = true
+  var program = createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos'])
+
+  return {
+    render: gfxRender.bind(null, gl, program)
+  }
 
   function createProgram(glslVert, glslFrag, uniforms, attributes) {
     var id = gl.createProgram()
