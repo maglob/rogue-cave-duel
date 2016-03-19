@@ -39,7 +39,7 @@ Array.prototype.flatten = function() {
 
 function regularPolygon(n) {
   return range(n).map(function(e) {
-    return vectorFromAngle(Math.PI * 2 / n * e)
+    return vectorFromAngle(-Math.PI * 2 / n * e)
   })
 }
 
