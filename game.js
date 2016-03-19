@@ -59,6 +59,9 @@ function Sprite(mesh, pos, v, angle, angleV) {
 
 function Mesh(vertices) {
   this.vertices = vertices
+  this.edges = range(vertices.length).map(function(i) {
+    return new Edge(vertices[i], vertices[(i+1) % vertices.length])
+  })
 }
 
 Mesh.prototype.scale = function(x) {

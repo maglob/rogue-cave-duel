@@ -18,6 +18,10 @@ Array.prototype.unit = function() {
   return this.mul(1 / this.norm())
 }
 
+Array.prototype.orto = function() {
+  return [-this[1], this[0]]
+}
+
 Array.prototype.angle = function() {
   var a = Math.atan(this[1] / this[0])
   return  this[0] >= 0
@@ -100,4 +104,20 @@ Matrix.prototype.mul = function(other) {
 
 Matrix.prototype.toString = function() {
   return "[" + this.data.map(function(e) { return "[" + e.join(" ") + "]" }).join(" ") + "]"
+}
+
+function Edge(a, b) {
+  this.a = a
+  this.b = b
+  this.vector = b.sub(a)
+  this.unit = this.vector.unit()
+  this.normal = this.unit.orto()
+}
+
+Edge.prototype.inside = function(pos) {
+  return pos.sub(this.a).dot(this.normal) > 0
+}
+
+Edge.prototype.intersects = function(other) {
+  return this.inside(other.a) != this.inside(other.b)  &&  other.inside(this.a) != other.inside(this.b)
 }
