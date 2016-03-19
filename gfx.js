@@ -27,7 +27,10 @@ function gfxInitialize(canvas, shaders) {
   var program = createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos'])
 
   return {
-    render: gfxRender.bind(null, gl, program)
+    render: gfxRender.bind(null, gl, program),
+    resize: function(width, height) {
+      gl.viewport(0, 0, width, height)
+    }
   }
 
   function createProgram(glslVert, glslFrag, uniforms, attributes) {
