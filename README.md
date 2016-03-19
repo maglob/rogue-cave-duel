@@ -10,3 +10,4 @@ Concept
 * No server. Just static files.
 * Local multiplayer
 * Standalone, no dependencies to third party libraries
+* Incremental, diary like development with hopefully a commit every day
