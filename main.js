@@ -1,6 +1,5 @@
 window.onload = function() {
-  var canvas = document.getElementById('canvas')
-  var gc = gfxInitialize(canvas, shaders)
+  var gc = gfxInitialize(document.getElementById('canvas'), shaders)
   var input = {
     left: false,
     right: false,
@@ -18,9 +17,7 @@ window.onload = function() {
   })(gameInitialize(input))
 
   function resize() {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    gc.resize(canvas.width, canvas.height)
+    gc.resize(window.innerWidth, window.innerHeight)
   }
 
   function readkeys(isDown, e) {
