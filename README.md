@@ -10,6 +10,7 @@ Controls
 * A - Turn left
 * D - Turn right
 * W - Thrust
+* Space - Pause
 
 Concept
 * Playable locally with a modern browser
