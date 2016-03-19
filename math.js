@@ -39,3 +39,47 @@ function range(n) {
     a.push(i)
   return a
 }
+
+function Matrix() {
+  this.data = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1]]
+}
+
+Matrix.translate = function(x, y) {
+  var m = new Matrix()
+  m.data[0][2] = x
+  m.data[1][2] = y
+  return m
+}
+
+Matrix.scale = function(x, y) {
+  var m = new Matrix()
+  m.data[0][0] = x
+  m.data[1][1] = y
+  return m
+}
+
+Matrix.rotate = function(a) {
+  var m = new Matrix()
+  var ca = Math.cos(a)
+  var sa = Math.sin(a)
+  m.data[0][0] = ca
+  m.data[0][1] = -sa
+  m.data[1][0] = sa
+  m.data[1][1] = ca
+  return m
+}
+
+Matrix.prototype.transpose = function() {
+  var m = new Matrix()
+  for(var j=0; j<3; j++)
+    for(var i=0; i<3; i++)
+      m.data[i][j] = this.data[j][i]
+  return m
+}
+
+Matrix.prototype.toString = function() {
+  return "[" + this.data.map(function(e) { return "[" + e.join(" ") + "]" }).join(" ") + "]"
+}
