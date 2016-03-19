@@ -14,10 +14,11 @@ shaders = {
   'constant.vert':
   "#version 100 \n"+
   " \n"+
+  "uniform mat3 matrix; \n"+
   "attribute vec2 pos; \n"+
   " \n"+
   "void main() { \n"+
-  "    gl_Position = vec4(pos, 0, 1); \n"+
+  "    gl_Position = vec4(matrix * vec3(pos, 1), 1); \n"+
   "} \n"+
   ""
 }

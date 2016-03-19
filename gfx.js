@@ -9,6 +9,7 @@ function gfxRender(state) {
   gl.useProgram(program.id)
   gl.enableVertexAttribArray(program.attribute.pos)
   gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
+  gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(Matrix.scale(2,2).data.flatten()))
 
   drawArray(range(8).map(function(i) {
     return vectorFromAngle(Math.PI * 2 / 8 * i + state.time).mul(.5)
@@ -26,7 +27,7 @@ function gfxRender(state) {
 
 function gfxInitialize(canvas, shaders) {
   var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
-  program = createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color'], ['pos'])
+  program = createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos'])
   gl.isInitialized = true
 
   function createProgram(glslVert, glslFrag, uniforms, attributes) {
