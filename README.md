@@ -11,3 +11,5 @@ Concept
 * Local multiplayer
 * Standalone, no dependencies to third party libraries
 * Incremental, diary like development with hopefully a commit every day
+
+[Live demo](http://maglob.github.io/rogue-cave-duel)
