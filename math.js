@@ -33,6 +33,12 @@ Array.prototype.flatten = function() {
   return this.concat.apply([], this)
 }
 
+function regularPolygon(n) {
+  return range(n).map(function(e) {
+    return vectorFromAngle(Math.PI * 2 / n * e)
+  })
+}
+
 function range(n) {
   var a = []
   for (var i=0; i<n; i++)
@@ -78,6 +84,18 @@ Matrix.prototype.transpose = function() {
     for(var i=0; i<3; i++)
       m.data[i][j] = this.data[j][i]
   return m
+}
+
+Matrix.prototype.mul = function(other) {
+  var res = new Matrix()
+  for (var j = 0; j < 3; j++)
+    for (var i = 0; i < 3; i++) {
+      var s = 0
+      for (var n = 0; n < 3; n++)
+        s += this.data[j][n] * other.data[n][i]
+      res.data[j][i] = s
+    }
+  return res
 }
 
 Matrix.prototype.toString = function() {

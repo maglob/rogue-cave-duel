@@ -1,18 +1,19 @@
 
 function gfxRender(gl, program, state) {
-  var matrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
-
+  var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
   gl.clearColor(1, 0, 0, 1)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
   gl.useProgram(program.id)
   gl.enableVertexAttribArray(program.attribute.pos)
-  gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
-  gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(matrix.data.flatten()))
+  gl.lineWidth(2)
 
-  drawArray(range(8).map(function(i) {
-    return vectorFromAngle(Math.PI * 2 / 8 * i + state.time).mul(200)
-  }), gl.LINE_STRIP)
+  state.sprites.forEach(function(s) {
+    gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
+    var matrix = baseMatrix.mul(Matrix.translate(s.pos[0], s.pos[1])).mul(Matrix.rotate(s.angle))
+    gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
+    drawArray(s.mesh.vertices, gl.LINE_STRIP)
+  })
 
   function drawArray(points, mode) {
     var buffer = gl.createBuffer()
