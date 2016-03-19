@@ -10,7 +10,7 @@ function gameUpdate(state, dt) {
     } else {
       s.pos = s.pos.add(s.v.mul(dt))
       s.angle += s.angleV * dt
-      if (s.pos[0] < -300 || s.pos[0] > 300)
+      if (s.v.norm() > 0 && (s.pos[0] < -50 || s.pos[0] > 300))
         s.v = s.v.mul(-1)
     }
   })
@@ -23,7 +23,7 @@ function gameUpdate(state, dt) {
 }
 
 function gameInitialize(playerInput) {
-  var meshOctagon = new Mesh(regularPolygon(8))
+  var meshRock = new Mesh(regularPolygon(8))
   var meshShip = new Mesh([[-5, 9], [20, 0], [-5, -9]])
   var ship = new Sprite(meshShip)
   ship.playerInput = playerInput
@@ -36,13 +36,13 @@ function gameInitialize(playerInput) {
     sprites: [
       ship,
       new Sprite(
-        meshOctagon.scale(200),
-        [0, 0], [100, 0],
+        meshRock.scale(50),
+        [-200, 30], [0, 0],
         0, 1
       ),
       new Sprite(
-        meshOctagon.scale(100),
-        [-100, 100], [200, 0],
+        meshRock.scale(30),
+        [-50, 200], [200, 0],
         0, -2
       )
     ]
