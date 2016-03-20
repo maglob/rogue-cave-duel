@@ -29,6 +29,12 @@ Array.prototype.angle = function() {
     : Math.PI - a
 }
 
+Array.prototype.rotate = function(a) {
+  var ca = Math.cos(a)
+  var sa = Math.sin(a)
+  return [this[0]*ca - this[1]*sa, this[0]*sa + this[1]*ca]
+}
+
 function vectorFromAngle(a) {
   return [Math.cos(a), Math.sin(a)]
 }
@@ -115,7 +121,7 @@ function Edge(a, b) {
 }
 
 Edge.prototype.inside = function(pos) {
-  return pos.sub(this.a).dot(this.normal) > 0
+  return pos.sub(this.a).mul(this.normal) > 0
 }
 
 Edge.prototype.intersects = function(other) {

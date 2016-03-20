@@ -10,7 +10,7 @@ function gfxRender(gl, program, state) {
 
   gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
   gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
-  drawArray(state.cave, gl.LINE_LOOP)
+  drawArray(state.cave.vertices, gl.LINE_LOOP)
 
   state.sprites.forEach(function(s) {
     gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
