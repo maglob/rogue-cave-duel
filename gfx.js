@@ -12,12 +12,14 @@ function gfxRender(gl, program, config, state) {
   gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
   drawArray(state.cave.vertices, gl.LINE_LOOP)
 
-  state.sprites.forEach(function(s) {
-    gl.uniform4fv(program.uniform.color, new Float32Array(config.spriteColor))
-    var matrix = baseMatrix.mul(Matrix.translate(s.pos[0], s.pos[1])).mul(Matrix.rotate(s.angle))
+  state.sprites.forEach(drawSprite.bind(null, config.spriteColor))
+
+  function drawSprite(color, sprite) {
+    gl.uniform4fv(program.uniform.color, new Float32Array(color))
+    var matrix = baseMatrix.mul(Matrix.translate(sprite.pos[0], sprite.pos[1])).mul(Matrix.rotate(sprite.angle))
     gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
-    drawArray(s.mesh.vertices, gl.LINE_LOOP)
-  })
+    drawArray(sprite.mesh.vertices, gl.LINE_LOOP)
+  }
 
   function drawArray(points, mode) {
     var buffer = gl.createBuffer()
