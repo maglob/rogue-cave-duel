@@ -1,19 +1,19 @@
 
-function gfxRender(gl, program, state) {
+function gfxRender(gl, program, config, state) {
   var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
-  gl.clearColor(1, 0, 0, 1)
+  gl.clearColor.apply(gl, config.backgroundColor)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
   gl.useProgram(program.id)
   gl.enableVertexAttribArray(program.attribute.pos)
   gl.lineWidth(2)
 
-  gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
+  gl.uniform4fv(program.uniform.color, new Float32Array(config.caveColor))
   gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
   drawArray(state.cave.vertices, gl.LINE_LOOP)
 
   state.sprites.forEach(function(s) {
-    gl.uniform4f(program.uniform.color, 1, 1, 1, 1)
+    gl.uniform4fv(program.uniform.color, new Float32Array(config.spriteColor))
     var matrix = baseMatrix.mul(Matrix.translate(s.pos[0], s.pos[1])).mul(Matrix.rotate(s.angle))
     gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
     drawArray(s.mesh.vertices, gl.LINE_LOOP)
@@ -29,12 +29,12 @@ function gfxRender(gl, program, state) {
   }
 }
 
-function gfxInitialize(canvas, shaders) {
+function gfxInitialize(canvas, shaders, config) {
   var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
   var program = createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos'])
 
   return {
-    render: gfxRender.bind(null, gl, program),
+    render: gfxRender.bind(null, gl, program, config),
     resize: function(width, height) {
       canvas.width = width
       canvas.height = height
