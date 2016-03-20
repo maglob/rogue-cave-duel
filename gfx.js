@@ -12,7 +12,8 @@ function gfxRender(gl, program, config, state) {
   gl.uniformMatrix3fv(program.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
   drawArray(state.cave.vertices, gl.LINE_LOOP)
 
-  state.sprites.forEach(drawSprite.bind(null, config.spriteColor))
+  state.ships.forEach(drawSprite.bind(null, config.shipColor))
+  state.rocks.forEach(drawSprite.bind(null, config.rockColor))
 
   function drawSprite(color, sprite) {
     gl.uniform4fv(program.uniform.color, new Float32Array(color))

@@ -1,7 +1,8 @@
 window.onload = function() {
   var config = {
     caveColor: [1, 1, 0, 1],
-    spriteColor: [1, 1, 1, 1],
+    shipColor: [1, 1, 1, 1],
+    rockColor: [1, 0, 0, 1],
     backgroundColor: [.1, .1, .1, 1]
   }
   var gc = gfxInitialize(document.getElementById('canvas'), shaders, config)

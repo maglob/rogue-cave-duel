@@ -1,28 +1,29 @@
 function gameUpdate(state, dt) {
-  state.sprites.forEach(function(s) {
-    if (s.playerInput) {
-      if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
-        s.angle = 0
-        s.pos = [0, 0]
-      }
-      if (s.playerInput.left)
-        s.angle += 4 * dt
-      if (s.playerInput.right)
-        s.angle -= 4 * dt
-      if (s.playerInput.thrust)
-        s.pos = s.pos.add(vectorFromAngle(s.angle).mul(100 * dt))
-    } else {
-      s.pos = s.pos.add(s.v.mul(dt))
-      s.angle += s.angleV * dt
-      if (s.v.norm() > 0 && (s.pos[0] < -50 || s.pos[0] > 300))
-        s.v = s.v.mul(-1)
+  state.rocks.forEach(function (s) {
+    s.pos = s.pos.add(s.v.mul(dt))
+    s.angle += s.angleV * dt
+    if (s.v.norm() > 0 && (s.pos[0] < -50 || s.pos[0] > 300))
+      s.v = s.v.mul(-1)
+  })
+
+  state.ships.forEach(function (s) {
+    if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
+      s.angle = 0
+      s.pos = [0, 0]
     }
+    if (s.playerInput.left)
+      s.angle += 4 * dt
+    if (s.playerInput.right)
+      s.angle -= 4 * dt
+    if (s.playerInput.thrust)
+      s.pos = s.pos.add(vectorFromAngle(s.angle).mul(100 * dt))
   })
 
   return {
     time: state.time + dt,
     cave: state.cave,
-    sprites: state.sprites
+    rocks: state.rocks,
+    ships: state.ships
   }
 }
 
@@ -37,8 +38,8 @@ function gameInitialize(playerInput) {
       [-400, -300], [-300, 0], [-350, 100], [-100, 200], [0, 320], [100, 280], [400, 230], [500, 0], [400, -50],
       [300, 0], [200, -100], [50, -50], [0, -70], [-100, -200], [-150, -300], [-300, -350]
     ]),
-    sprites: [
-      ship,
+    ships: [ship],
+    rocks: [
       new Sprite(
         meshRock.scale(50),
         [-200, 30], [0, 0],
