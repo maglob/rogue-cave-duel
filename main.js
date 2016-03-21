@@ -1,5 +1,8 @@
 window.onload = function() {
   var config = {
+    gravity: [0, -30],
+    friction: 0.1,
+    turnSpeed: 4,
     caveColor: [1, 1, 0, 1],
     shipColor: [1, 1, 1, 1],
     rockColor: [1, 0, 0, 1],
@@ -25,7 +28,7 @@ window.onload = function() {
       input.pauseToggle = false
     }
     if (!pause) {
-      state = gameUpdate(state, input, 1 / 60)
+      state = gameUpdate(state, input, config, 1 / 60)
       gc.render(state)
     }
     window.requestAnimationFrame(tick.bind(null, state))
