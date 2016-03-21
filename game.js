@@ -1,4 +1,4 @@
-function gameUpdate(state, dt) {
+function gameUpdate(state, input, dt) {
   state.rocks.forEach(function (s) {
     s.pos = s.pos.add(s.v.mul(dt))
     s.angle += s.angleV * dt
@@ -11,11 +11,11 @@ function gameUpdate(state, dt) {
       s.angle = 0
       s.pos = [0, 0]
     }
-    if (s.playerInput.left)
+    if (input.left)
       s.angle += 4 * dt
-    if (s.playerInput.right)
+    if (input.right)
       s.angle -= 4 * dt
-    if (s.playerInput.thrust)
+    if (input.thrust)
       s.pos = s.pos.add(vectorFromAngle(s.angle).mul(100 * dt))
   })
 
@@ -27,11 +27,11 @@ function gameUpdate(state, dt) {
   }
 }
 
-function gameInitialize(playerInput) {
+function gameInitialize() {
   var meshRock = new Mesh(regularPolygon(8))
   var meshShip = new Mesh([[-5, 9], [20, 0], [-5, -9]])
   var ship = new Sprite(meshShip)
-  ship.playerInput = playerInput
+
   return {
     time: 0,
     cave: new Mesh([

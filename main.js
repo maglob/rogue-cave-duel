@@ -19,17 +19,17 @@ window.onload = function() {
   resize();
   var pause = false;
 
-  (function tick(state, time) {
+  (function tick(state) {
     if (input.pauseToggle) {
       pause = !pause
       input.pauseToggle = false
     }
     if (!pause) {
-      state = gameUpdate(state, 1 / 60)
+      state = gameUpdate(state, input, 1 / 60)
       gc.render(state)
     }
     window.requestAnimationFrame(tick.bind(null, state))
-  })(gameInitialize(input))
+  })(gameInitialize())
 
   function resize() {
     gc.resize(window.innerWidth, window.innerHeight)
