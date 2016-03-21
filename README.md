@@ -7,10 +7,10 @@ Influenced by Thrust, Gravity Force and XPilot
 [Live demo](http://maglob.github.io/rogue-cave-duel)
 
 Controls
-* A - Turn left
-* D - Turn right
-* W - Thrust
-* Space - Pause
+* Turn left - A
+* Turn right - D
+* Thrust - W or Right shift
+* Pause - Space
 
 Concept
 * Playable locally with a modern browser

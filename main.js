@@ -42,6 +42,7 @@ window.onload = function() {
     switch (e.keyCode) {
       case 65: this.left = isDown; break;
       case 68: this.right = isDown; break;
+      case 16:
       case 87: this.thrust = isDown; break;
       case 32: this.pauseToggle = isDown; break;
     }
