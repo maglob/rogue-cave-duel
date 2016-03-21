@@ -33,7 +33,7 @@ function gameUpdate(state, input, config, dt) {
 
 function gameInitialize() {
   var meshRock = new Mesh(regularPolygon(8))
-  var meshShip = new Mesh([[-5, 9], [20, 0], [-5, -9]])
+  var meshShip = new Mesh([[-7, 10], [18, 0], [-7, -10], [-2, -4], [-2, 4]])
   var ship = new Sprite(meshShip, [0, 0], [0, 0], Math.PI/2)
 
   return {
