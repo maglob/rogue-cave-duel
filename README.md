@@ -17,5 +17,6 @@ Concept
 * Groovy vector display graphics with WebGL shaders
 * No server. Just static files.
 * Local multiplayer
-* Standalone, no dependencies to third party libraries
+* Standalone, no dependencies to third party libraries. Just JavaScript and HTML5.
 * Incremental, diary like development with hopefully a commit every day
+* Learning by doing
