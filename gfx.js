@@ -2,48 +2,40 @@
 function gfxRender(gl, ctx, config, state) {
   var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
 
-  renderToTexture()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffer)
+  withProgram(ctx.program, function(prg) {
+    gl.clearColor.apply(gl, config.backgroundColor)
+    gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.lineWidth(2)
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveColor))
+    gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
+    drawArray(state.cave.vertices, prg.attribute.pos, gl.LINE_LOOP)
+    state.ships.forEach(drawSprite.bind(null, config.shipColor))
+    state.rocks.forEach(drawSprite.bind(null, config.rockColor))
+  })
 
-  gl.useProgram(ctx.program.id)
-  gl.enableVertexAttribArray(ctx.program.attribute.pos)
-  gl.clearColor.apply(gl, config.backgroundColor)
-  gl.clear(gl.COLOR_BUFFER_BIT)
-  gl.lineWidth(2)
-  gl.uniform4fv(ctx.program.uniform.color, new Float32Array(config.caveColor))
-  gl.uniformMatrix3fv(ctx.program.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
-
-  drawArray(state.cave.vertices, ctx.program.attribute.pos, gl.LINE_LOOP)
-  state.ships.forEach(drawSprite.bind(null, config.shipColor))
-  state.rocks.forEach(drawSprite.bind(null, config.rockColor))
-
-  gl.disableVertexAttribArray(ctx.program.attribute.pos)
-
-  blitTextureToScreen()
-
-  function renderToTexture() {
-    gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
-    gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffer)
-  }
-
-  function blitTextureToScreen() {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-    gl.useProgram(ctx.programTexture.id)
-    gl.enableVertexAttribArray(ctx.programTexture.attribute.pos)
-    gl.enableVertexAttribArray(ctx.programTexture.attribute.texPos)
-    gl.uniformMatrix3fv(ctx.programTexture.uniform.matrix, false, baseMatrix.transpose().data.flatten())
-    gl.uniform1i(ctx.programTexture.uniform.sampler, 0)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+  withProgram(ctx.programTexture, function(prg) {
+    gl.uniformMatrix3fv(prg.uniform.matrix, false, new Matrix().data.flatten())
+    gl.uniform1i(prg.uniform.sampler, 0)
     gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
     var buffer2 = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer2)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]), gl.STREAM_DRAW)
-    gl.vertexAttribPointer(ctx.programTexture.attribute.texPos, 2, gl.FLOAT, false, 0, 0)
-    var w2 = gl.canvas.width / 2
-    var h2 = gl.canvas.height / 2
-    drawArray([[-w2, h2], [w2, h2], [-w2, -h2], [w2, -h2]], ctx.programTexture.attribute.pos, gl.TRIANGLE_STRIP)
+    gl.vertexAttribPointer(prg.attribute.texPos, 2, gl.FLOAT, false, 0, 0)
+    drawArray([[-1, 1], [1, 1], [-1, -1], [1, -1]], prg.attribute.pos, gl.TRIANGLE_STRIP)
     gl.deleteBuffer(buffer2)
-    gl.disableVertexAttribArray(ctx.programTexture.attribute.pos)
-    gl.disableVertexAttribArray(ctx.programTexture.attribute.texPos)
+  })
+
+  function withProgram(program, fn) {
+    gl.useProgram(program.id)
+    Object.keys(program.attribute).forEach(function(e) {
+      gl.enableVertexAttribArray(program.attribute[e])
+    })
+    fn(program)
+    Object.keys(program.attribute).forEach(function(e) {
+      gl.disableVertexAttribArray(program.attribute[e])
+    })
   }
 
   function drawSprite(color, sprite) {
@@ -84,6 +76,8 @@ function gfxInitialize(canvas, shaders, config) {
       canvas.width = width
       canvas.height = height
       gl.viewport(0, 0, width, height)
+      gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
     }
   }
 
