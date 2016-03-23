@@ -19,12 +19,7 @@ function gfxRender(gl, ctx, config, state) {
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Matrix().data.flatten())
     gl.uniform1i(prg.uniform.sampler, 0)
     gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
-    var buffer2 = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer2)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]), gl.STREAM_DRAW)
-    gl.vertexAttribPointer(prg.attribute.texPos, 2, gl.FLOAT, false, 0, 0)
-    drawArray([[-1, 1], [1, 1], [-1, -1], [1, -1]], prg.attribute.pos, gl.TRIANGLE_STRIP)
-    gl.deleteBuffer(buffer2)
+    drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
   })
 
   function withProgram(program, fn) {
@@ -49,7 +44,7 @@ function gfxRender(gl, ctx, config, state) {
     var buffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points.flatten()), gl.STREAM_DRAW)
-    gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(attribute, points[0].length, gl.FLOAT, false, 0, 0)
     gl.drawArrays(mode, 0, points.length)
     gl.deleteBuffer(buffer)
   }
@@ -59,7 +54,7 @@ function gfxInitialize(canvas, shaders, config) {
   var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
-    programTexture: createProgram(shaders['texture.vert'], shaders['texture.frag'], ['sampler', 'matrix'], ['pos', 'texPos']),
+    programTexture: createProgram(shaders['texture.vert'], shaders['texture.frag'], ['sampler', 'matrix'], ['vertex']),
     framebuffer: gl.createFramebuffer(),
     texture: gl.createTexture()
   }

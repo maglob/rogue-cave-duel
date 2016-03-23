@@ -36,13 +36,12 @@ shaders = {
   "#version 100 \n"+
   " \n"+
   "uniform mat3 matrix; \n"+
-  "attribute vec2 pos; \n"+
-  "attribute vec2 texPos; \n"+
+  "attribute vec4 vertex; \n"+
   "varying vec2 texCoord; \n"+
   " \n"+
   "void main() { \n"+
-  "    gl_Position = vec4(matrix * vec3(pos, 1), 1); \n"+
-  "    texCoord = texPos; \n"+
+  "    gl_Position = vec4(matrix * vec3(vertex.xy, 1), 1); \n"+
+  "    texCoord = vertex.zw; \n"+
   "} \n"+
   ""
 }
