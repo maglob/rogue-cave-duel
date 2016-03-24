@@ -57,6 +57,7 @@ function gfxInitialize(canvas, shaders, config) {
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
     effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
+    effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
     framebuffer: gl.createFramebuffer(),
     texture: gl.createTexture(),
     vertexBuffer: gl.createBuffer()
