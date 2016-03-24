@@ -2,7 +2,7 @@
 function gfxRender(gl, ctx, config, state) {
   var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffer)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[0].id)
   withProgram(ctx.program, function(prg) {
     gl.clearColor.apply(gl, config.backgroundColor)
     gl.clear(gl.COLOR_BUFFER_BIT)
@@ -14,10 +14,17 @@ function gfxRender(gl, ctx, config, state) {
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
   })
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[1].id)
   withProgram(ctx.effectGrayscale, function(prg) {
     gl.uniform1i(prg.uniform.sampler, 0)
-    gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
+    gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[0].texture)
+    drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
+  })
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+  withProgram(ctx.effectDither, function(prg) {
+    gl.uniform1i(prg.uniform.sampler, 0)
+    gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[1].texture)
     drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
   })
 
@@ -54,20 +61,27 @@ function gfxRender(gl, ctx, config, state) {
 
 function gfxInitialize(canvas, shaders, config) {
   var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
+  var framebuffers = range(2).map(function() {
+    var id = gl.createFramebuffer()
+    var texture = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, id)
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+    return {
+      id: id,
+      texture: texture
+    }
+  })
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
     effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
     effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
-    framebuffer: gl.createFramebuffer(),
-    texture: gl.createTexture(),
+    framebuffers: framebuffers,
     vertexBuffer: gl.createBuffer()
   }
-  gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffer)
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, ctx.texture, 0)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, ctx.vertexBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, config.vertexBufferSize, gl.STREAM_DRAW)
@@ -78,8 +92,10 @@ function gfxInitialize(canvas, shaders, config) {
       canvas.width = width
       canvas.height = height
       gl.viewport(0, 0, width, height)
-      gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+      ctx.framebuffers.forEach(function(fb) {
+        gl.bindTexture(gl.TEXTURE_2D, fb.texture)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+      })
     }
   }
 
