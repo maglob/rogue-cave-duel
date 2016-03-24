@@ -6,8 +6,12 @@ Array.prototype.sub = function(other) {
   return [this[0] - other[0], this[1] - other[1]]
 }
 
-Array.prototype.mul = function(other) {
-  return Array.isArray(other) ? this[0]*other[0] + this[1]*other[1] : [this[0]*other, this[1]*other]
+Array.prototype.mul = function(value) {
+  return [this[0] * value, this[1] * value]
+}
+
+Array.prototype.dot = function(other) {
+  return this[0] * other[0] + this[1] * other[1]
 }
 
 Array.prototype.norm = function() {
@@ -121,7 +125,7 @@ function Edge(a, b) {
 }
 
 Edge.prototype.inside = function(pos) {
-  return pos.sub(this.a).mul(this.normal) > 0
+  return pos.sub(this.a).dot(this.normal) > 0
 }
 
 Edge.prototype.intersects = function(other) {
