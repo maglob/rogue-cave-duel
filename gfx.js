@@ -12,20 +12,16 @@ function gfxRender(gl, ctx, config, state) {
     drawArray(state.cave.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
-  })
+  });
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[1].id)
-  withProgram(ctx.effectGrayscale, function(prg) {
-    gl.uniform1i(prg.uniform.sampler, 0)
-    gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[0].texture)
-    drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
-  })
-
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-  withProgram(ctx.effectDither, function(prg) {
-    gl.uniform1i(prg.uniform.sampler, 0)
-    gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[1].texture)
-    drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
+  [ctx.effectGrayscale, ctx.effectDither].forEach(function(effect, i, array) {
+    var isLast = i == (array.length - 1)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, isLast ? null : ctx.framebuffers[(i+1)%2].id)
+    withProgram(effect, function(prg) {
+      gl.uniform1i(prg.uniform.sampler, 0)
+      gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[i%2].texture)
+      drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
+    })
   })
 
   function withProgram(program, fn) {
