@@ -15,7 +15,7 @@ function gfxRender(gl, ctx, config, state) {
   })
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-  withProgram(ctx.programTexture, function(prg) {
+  withProgram(ctx.programGrayscale, function(prg) {
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Matrix().data.flatten())
     gl.uniform1i(prg.uniform.sampler, 0)
     gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
@@ -58,6 +58,7 @@ function gfxInitialize(canvas, shaders, config) {
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
     programTexture: createProgram(shaders['texture.vert'], shaders['texture.frag'], ['sampler', 'matrix'], ['vertex']),
+    programGrayscale: createProgram(shaders['texture.vert'], shaders['grayscale.frag'], ['sampler', 'matrix'], ['vertex']),
     framebuffer: gl.createFramebuffer(),
     texture: gl.createTexture(),
     vertexBuffer: gl.createBuffer()
