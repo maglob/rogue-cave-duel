@@ -15,8 +15,7 @@ function gfxRender(gl, ctx, config, state) {
   })
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-  withProgram(ctx.programGrayscale, function(prg) {
-    gl.uniformMatrix3fv(prg.uniform.matrix, false, new Matrix().data.flatten())
+  withProgram(ctx.effectGrayscale, function(prg) {
     gl.uniform1i(prg.uniform.sampler, 0)
     gl.bindTexture(gl.TEXTURE_2D, ctx.texture)
     drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
@@ -57,8 +56,7 @@ function gfxInitialize(canvas, shaders, config) {
   var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
-    programTexture: createProgram(shaders['texture.vert'], shaders['texture.frag'], ['sampler', 'matrix'], ['vertex']),
-    programGrayscale: createProgram(shaders['texture.vert'], shaders['grayscale.frag'], ['sampler', 'matrix'], ['vertex']),
+    effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
     framebuffer: gl.createFramebuffer(),
     texture: gl.createTexture(),
     vertexBuffer: gl.createBuffer()
