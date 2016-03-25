@@ -14,11 +14,13 @@ function gfxRender(gl, ctx, config, state) {
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
   });
 
-  [ctx.effectGrayscale, ctx.effectDither].forEach(function(effect, i, array) {
+  [ctx.effectBlur, ctx.effectBlur].forEach(function(effect, i, array) {
     var isLast = i == (array.length - 1)
     gl.bindFramebuffer(gl.FRAMEBUFFER, isLast ? null : ctx.framebuffers[(i+1)%2].id)
     withProgram(effect, function(prg) {
       gl.uniform1i(prg.uniform.sampler, 0)
+      var delta = i==0 ? [1.0/gl.canvas.width, 0] : [0, 1.0/gl.canvas.height]
+      gl.uniform2fv(prg.uniform.delta, new Float32Array(delta))
       gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[i%2].texture)
       drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
     })
@@ -75,6 +77,7 @@ function gfxInitialize(canvas, shaders, config) {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
     effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
     effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
+    effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta'], ['vertex']),
     framebuffers: framebuffers,
     vertexBuffer: gl.createBuffer()
   }
