@@ -53,6 +53,11 @@ window.onload = function() {
       case 16:
       case 87: this.thrust = isDown; break;
       case 32: this.pauseToggle = isDown; break;
+      case 70:
+        var el = document.getElementById('game')
+        var fullscreen = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen
+        fullscreen.call(el)
+        break;
       default: preventDefault = false; break;
     }
     if(preventDefault)

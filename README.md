@@ -11,6 +11,7 @@ Controls
 * Turn right - D
 * Thrust - W or Right shift
 * Pause - Space
+* Fullscreen mode - F
 
 Concept
 * Playable locally with a modern browser
