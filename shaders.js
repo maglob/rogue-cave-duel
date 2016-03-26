@@ -10,17 +10,21 @@ shaders = {
   "varying vec2 texCoord; \n"+
   " \n"+
   "void main() { \n"+
-  "    const int KERNEL_SIZE = 3; \n"+
+  "    const int KERNEL_SIZE = 5; \n"+
   "    float kernel[KERNEL_SIZE]; \n"+
-  "    kernel[0] = 1.0; \n"+
-  "    kernel[1] = 1.0; \n"+
-  "    kernel[2] = 1.0; \n"+
+  "    kernel[0] = .7; \n"+
+  "    kernel[1] = .45; \n"+
+  "    kernel[2] = .25; \n"+
+  "    kernel[3] = .15; \n"+
+  "    kernel[4] = .05; \n"+
   "    vec3 p = texture2D(sampler, texCoord).xyz * kernel[0]; \n"+
+  "    float weight_sum = kernel[0]; \n"+
   "    for(int i=1; i<KERNEL_SIZE; i++) { \n"+
+  "        weight_sum += kernel[i] * 2.0; \n"+
   "        p += texture2D(sampler, texCoord + delta*float(i)).xyz * kernel[i]; \n"+
   "        p += texture2D(sampler, texCoord - delta*float(i)).xyz * kernel[i]; \n"+
   "    } \n"+
-  "    gl_FragColor = vec4(p / (float(KERNEL_SIZE)*2.0 - 1.0), 1.0); \n"+
+  "    gl_FragColor = vec4(p / weight_sum, 1.0); \n"+
   "} \n"+
   "",
   'constant.frag':
