@@ -12,19 +12,20 @@ function gfxRender(gl, ctx, config, state) {
     drawArray(state.cave.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
-  });
+  })
 
-  [ctx.effectBlur, ctx.effectBlur].forEach(function(effect, i, array) {
-    var isLast = i == (array.length - 1)
-    gl.bindFramebuffer(gl.FRAMEBUFFER, isLast ? null : ctx.framebuffers[(i+1)%2].id)
-    withProgram(effect, function(prg) {
+  doBlur(ctx.framebuffers[0], ctx.framebuffers[1], [1.0/gl.canvas.width, 0])
+  doBlur(ctx.framebuffers[1], null, [0, 1.0/gl.canvas.height])
+
+  function doBlur(srcFramebuffer, destFramebuffer, delta) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, destFramebuffer ? destFramebuffer.id : null)
+    withProgram(ctx.effectBlur, function(prg) {
       gl.uniform1i(prg.uniform.sampler, 0)
-      var delta = i==0 ? [1.0/gl.canvas.width, 0] : [0, 1.0/gl.canvas.height]
       gl.uniform2fv(prg.uniform.delta, new Float32Array(delta))
-      gl.bindTexture(gl.TEXTURE_2D, ctx.framebuffers[i%2].texture)
+      gl.bindTexture(gl.TEXTURE_2D, srcFramebuffer.texture)
       drawArray([[-1, 1, 0, 1], [1, 1, 1, 1], [-1, -1, 0, 0], [1, -1, 1, 0]], prg.attribute.vertex, gl.TRIANGLE_STRIP)
     })
-  })
+  }
 
   function withProgram(program, fn) {
     gl.useProgram(program.id)
