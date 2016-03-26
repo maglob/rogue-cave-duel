@@ -7,6 +7,9 @@ window.onload = function() {
     shipColor: [1, 1, 1, 1],
     rockColor: [1, 0, 0, 1],
     backgroundColor: [.1, .1, .1, 1],
+    shotColor: [1, 1, 1, 1],
+    shotSpeed: 100,
+    shotStartDistance: 20,
     vertexBufferSize: 8192
   }
   var gc = gfxInitialize(document.getElementById('canvas'), shaders, config)
@@ -48,6 +51,8 @@ window.onload = function() {
   function readkeys(isDown, e) {
     var preventDefault = true
     switch (e.keyCode) {
+      case 13:
+      case 83: this.fire = isDown; break;
       case 65: this.left = isDown; break;
       case 68: this.right = isDown; break;
       case 16:

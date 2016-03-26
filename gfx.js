@@ -13,6 +13,9 @@ function gfxRender(gl, ctx, config, state) {
     drawArray(state.cave.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.shotColor))
+    gl.uniformMatrix3fv(prg.uniform.matrix, false, baseMatrix.transpose().data.flatten())
+    drawArray(state.shots.map(function(s) { return s.pos }), prg.attribute.pos, gl.POINTS)
   })
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[2].id)
@@ -62,6 +65,8 @@ function gfxRender(gl, ctx, config, state) {
   }
 
   function drawArray(points, attribute, mode) {
+    if (!points || points.length == 0)
+      return
     var data = new Float32Array(points.flatten())
     if (data.length * 4 <= config.vertexBufferSize) {
       gl.bindBuffer(gl.ARRAY_BUFFER, ctx.vertexBuffer)

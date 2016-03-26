@@ -6,11 +6,21 @@ function gameUpdate(state, input, config, dt) {
       s.v = s.v.mul(-1)
   })
 
+  state.shots.forEach(function (s) {
+    s.pos = s.pos.add(s.v.mul(dt))
+  })
+
   state.ships.forEach(function (s) {
     if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
       s.angle = Math.PI / 2
       s.pos = [0, 0]
       s.v = [0, 0]
+    }
+    if (input.fire) {
+      var shot = new Sprite()
+      shot.pos = s.pos.add(vectorFromAngle(s.angle).mul(config.shotStartDistance))
+      shot.v = s.v.add(vectorFromAngle(s.angle).mul(config.shotSpeed))
+      state.shots.push(shot)
     }
     if (input.left)
       s.angle += config.turnSpeed * dt
@@ -24,10 +34,12 @@ function gameUpdate(state, input, config, dt) {
   })
 
   return {
+    frame: state.frame + 1,
     time: state.time + dt,
     cave: state.cave,
     rocks: state.rocks,
-    ships: state.ships
+    ships: state.ships,
+    shots: state.shots
   }
 }
 
@@ -37,6 +49,7 @@ function gameInitialize() {
   var ship = new Sprite(meshShip, [0, 0], [0, 0], Math.PI/2)
 
   return {
+    frame: 0,
     time: 0,
     cave: new Mesh([
       [-400, -300], [-300, 0], [-350, 100], [-100, 200], [0, 320], [100, 280], [400, 230], [500, 0], [400, -50],
@@ -54,7 +67,8 @@ function gameInitialize() {
         [-50, 200], [200, 0],
         0, -2
       )
-    ]
+    ],
+    shots: []
   }
 }
 

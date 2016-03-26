@@ -10,6 +10,7 @@ Controls
 * Turn left - A
 * Turn right - D
 * Thrust - W or Right shift
+* Fire - S or Enter
 * Pause - Space
 * Fullscreen mode - F
 

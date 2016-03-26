@@ -45,6 +45,7 @@ shaders = {
   " \n"+
   "void main() { \n"+
   "    gl_Position = vec4(matrix * vec3(pos, 1), 1); \n"+
+  "    gl_PointSize = 3.0; \n"+
   "} \n"+
   "",
   'dither.frag':
