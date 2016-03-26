@@ -20,10 +20,15 @@ window.onload = function() {
   window.addEventListener('keydown', readkeys.bind(input, true))
   window.addEventListener('keyup', readkeys.bind(input, false))
 
-  resize();
-  var pause = false;
+  resize()
+  var pause = false
+  var prevTime = 0
+  var avgFrameTime = 1 / 60 * 1000;
 
-  (function tick(state) {
+  (function tick(state, time) {
+    if (prevTime)
+      avgFrameTime = avgFrameTime * .8 + (time - prevTime) * .2
+    prevTime = time
     if (input.pauseToggle) {
       pause = !pause
       input.pauseToggle = false
@@ -31,6 +36,7 @@ window.onload = function() {
     if (!pause) {
       state = gameUpdate(state, input, config, 1 / 60)
       gc.render(state)
+      document.getElementById('fps').textContent = (1 / avgFrameTime * 1000).toFixed()
     }
     window.requestAnimationFrame(tick.bind(null, state))
   })(gameInitialize())
