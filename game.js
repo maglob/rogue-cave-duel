@@ -1,4 +1,6 @@
 function gameUpdate(state, input, config, dt) {
+  var collisions = []
+
   state.rocks.forEach(function (s) {
     s.pos = s.pos.add(s.v.mul(dt))
     s.angle += s.angleV * dt
@@ -7,7 +9,10 @@ function gameUpdate(state, input, config, dt) {
   })
 
   state.shots.forEach(function (s) {
+    var oldPos = s.pos
     s.pos = s.pos.add(s.v.mul(dt))
+    if (state.cave.intersects(new Edge(oldPos, s.pos)))
+      collisions.push({a: null, b: s})
   })
 
   state.ships.forEach(function (s) {
@@ -33,13 +38,18 @@ function gameUpdate(state, input, config, dt) {
     s.pos = s.pos.add(s.v.mul(dt))
   })
 
+  collisions.forEach(function(col) {
+    if (col.a == null && col.b.mesh == null)
+      col.b.removed = true
+  })
+
   return {
     frame: state.frame + 1,
     time: state.time + dt,
     cave: state.cave,
     rocks: state.rocks,
     ships: state.ships,
-    shots: state.shots
+    shots: state.shots.filter(function(s) { return !s.removed })
   }
 }
 
@@ -107,8 +117,13 @@ Mesh.prototype.rotate = function(a) {
 
 Mesh.prototype.intersects = function(other) {
   for(var i=0; i<this.edges.length; i++)
-    for(var j=0; j<other.edges.length; j++)
-      if (this.edges[i].intersects(other.edges[j]))
+    if (other instanceof Edge) {
+      if (this.edges[i].intersects(other))
         return true
+    } else {
+      for (var j = 0; j < other.edges.length; j++)
+        if (this.edges[i].intersects(other.edges[j]))
+          return true
+    }
   return false
 }
