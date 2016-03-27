@@ -51,10 +51,10 @@ function gameInitialize() {
   return {
     frame: 0,
     time: 0,
-    cave: new Mesh([
+    cave: new Mesh(bezierPath([
       [-400, -300], [-300, 0], [-350, 100], [-100, 200], [0, 320], [100, 280], [400, 230], [500, 0], [400, -50],
       [300, 0], [200, -100], [50, -50], [0, -70], [-100, -200], [-150, -300], [-300, -350]
-    ]),
+    ], 8)),
     ships: [ship],
     rocks: [
       new Sprite(

@@ -131,3 +131,31 @@ Edge.prototype.inside = function(pos) {
 Edge.prototype.intersects = function(other) {
   return this.inside(other.a) != this.inside(other.b)  &&  other.inside(this.a) != other.inside(this.b)
 }
+
+function bezierPath(controlPoints, segmentCount) {
+  var res = []
+  for (var i=0; i<controlPoints.length; i+=3) {
+    var p = controlPoints.slice(i, i+4)
+    switch (p.length) {
+      case 1:
+        p.push(controlPoints[0].add(p[0]).mul(1/3), controlPoints[0].add(p[0]).mul(2/3), controlPoints[0])
+        break;
+      case 2:
+        p.push(controlPoints[0].add(p[1]).mul(.5), controlPoints[0]);
+        break;
+      case 3:
+        p.push(controlPoints[0]);
+        break;
+    }
+    for (var t=0; t<1; t+=1/segmentCount)
+      res.push(bezier(p, t))
+  }
+  return res
+
+  function bezier(cp, t) {
+    return cp[0].mul(Math.pow(1 - t, 3))
+      .add(cp[1].mul(3 * t * Math.pow(1 - t, 2)))
+      .add(cp[2].mul(3 * (1 - t) * Math.pow(t, 2)))
+      .add(cp[3].mul(Math.pow(t, 3)))
+  }
+}
