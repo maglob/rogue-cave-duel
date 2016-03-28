@@ -31,8 +31,12 @@ function gameUpdate(state, input, config, dt) {
       s.angle += config.turnSpeed * dt
     if (input.right)
       s.angle -= config.turnSpeed * dt
-    if (input.thrust)
+    if (input.thrust) {
       s.v = s.v.add(vectorFromAngle(s.angle).mul(200 * dt))
+      var spread = Math.PI/3
+      var a = s.angle + Math.PI + Math.random()*spread - spread/2
+      state.thrustParticles.emit(s.pos, s.v.add(vectorFromAngle(a).mul(100)))
+    }
     s.v = s.v.add(config.gravity.mul(dt))
     s.v = s.v.mul(Math.pow(1 - config.friction, dt))
     s.pos = s.pos.add(s.v.mul(dt))
@@ -49,7 +53,8 @@ function gameUpdate(state, input, config, dt) {
     cave: state.cave,
     rocks: state.rocks,
     ships: state.ships,
-    shots: state.shots.filter(function(s) { return !s.removed })
+    shots: state.shots.filter(function(s) { return !s.removed }),
+    thrustParticles: state.thrustParticles.update(dt)
   }
 }
 
@@ -78,7 +83,8 @@ function gameInitialize() {
         0, -2
       )
     ],
-    shots: []
+    shots: [],
+    thrustParticles: new ParticleSystem(100, [0, -20], 0.4, 1)
   }
 }
 
@@ -126,4 +132,34 @@ Mesh.prototype.intersects = function(other) {
           return true
     }
   return false
+}
+
+function ParticleSystem(maxCount, gravity, friction, ttl) {
+  this.maxCount = maxCount || 100
+  this.gravity = gravity || [0, 0]
+  this.friction = friction || 0
+  this.ttl = ttl || 1
+  this.particles = []
+}
+
+ParticleSystem.prototype.emit = function (pos, v) {
+  if (this.particles.length < this.maxCount) {
+    var s = new Sprite()
+    s.pos = pos
+    s.v = v
+    s.ttl = this.ttl - Math.random()*this.ttl/2
+    this.particles.push(s)
+  }
+}
+
+ParticleSystem.prototype.update = function (dt) {
+  var self = this
+  this.particles.forEach(function (p) {
+    p.ttl -= dt
+    p.v = p.v.add(self.gravity.mul(dt))
+    p.v = p.v.mul(Math.pow(1 - self.friction, dt))
+    p.pos = p.pos.add(p.v.mul(dt))
+  })
+  this.particles = this.particles.filter(function(p) { return p.ttl > 0 })
+  return this
 }
