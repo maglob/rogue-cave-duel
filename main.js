@@ -8,6 +8,7 @@ window.onload = function() {
     rockColor: [1, 0, 0, 1],
     backgroundColor: [.1, .1, .1, 1],
     shotColor: [1, 1, 1, 1],
+    thrustColor: [.2, .2, .2, 1],
     shotSpeed: 100,
     shotStartDistance: 20,
     vertexBufferSize: 8192

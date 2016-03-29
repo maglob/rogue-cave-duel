@@ -16,8 +16,11 @@ function gfxRender(gl, ctx, config, state) {
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.shotColor))
     gl.uniformMatrix3fv(prg.uniform.matrix, false, baseMatrix.transpose().data.flatten())
     drawArray(state.shots.map(function(s) { return s.pos }), prg.attribute.pos, gl.POINTS)
-    gl.uniform4fv(prg.uniform.color, new Float32Array([.5, .5, .5, 1]))
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.ONE, gl.ONE)
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.thrustColor))
     drawArray(state.thrustParticles.particles.map(function(p) { return p.pos }), prg.attribute.pos, gl.POINTS)
+    gl.disable(gl.BLEND)
   })
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[2].id)
