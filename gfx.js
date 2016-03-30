@@ -44,6 +44,9 @@ function gfxRender(gl, ctx, config, state) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, destFramebuffer ? destFramebuffer.id : null)
     gl.viewport(0, 0, destFramebuffer ? destFramebuffer.width : gl.canvas.width, destFramebuffer ? destFramebuffer.height : gl.canvas.height)
     withProgram(ctx.effectBlur, function(prg) {
+      var kernel = [.7, .45, .25, .15, .05]
+      gl.uniform1i(prg.uniform.kernel_size, kernel.length)
+      gl.uniform1fv(prg.uniform.kernel, new Float32Array(kernel))
       gl.uniform1i(prg.uniform.sampler, 0)
       gl.uniform2fv(prg.uniform.delta, new Float32Array(delta))
       gl.bindTexture(gl.TEXTURE_2D, srcFramebuffer.texture)
@@ -105,7 +108,7 @@ function gfxInitialize(canvas, shaders, config) {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
     effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
     effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
-    effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta'], ['vertex']),
+    effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),
     framebuffers: framebuffers,
     vertexBuffer: gl.createBuffer()
   }

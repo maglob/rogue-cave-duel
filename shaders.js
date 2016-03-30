@@ -5,21 +5,20 @@ shaders = {
   "#version 100 \n"+
   "precision mediump float; \n"+
   " \n"+
+  "const int MAX_KERNEL_SIZE = 20; \n"+
   "uniform sampler2D sampler; \n"+
+  "uniform float kernel[MAX_KERNEL_SIZE]; \n"+
+  "uniform int kernel_size; \n"+
   "uniform vec2 delta; \n"+
   "varying vec2 texCoord; \n"+
   " \n"+
   "void main() { \n"+
-  "    const int KERNEL_SIZE = 5; \n"+
-  "    float kernel[KERNEL_SIZE]; \n"+
-  "    kernel[0] = .7; \n"+
-  "    kernel[1] = .45; \n"+
-  "    kernel[2] = .25; \n"+
-  "    kernel[3] = .15; \n"+
-  "    kernel[4] = .05; \n"+
   "    vec3 p = texture2D(sampler, texCoord).xyz * kernel[0]; \n"+
   "    float weight_sum = kernel[0]; \n"+
-  "    for(int i=1; i<KERNEL_SIZE; i++) { \n"+
+  "    int j = 1; \n"+
+  "    for (int i=1; i<MAX_KERNEL_SIZE; i++) { \n"+
+  "        if (j++ >= kernel_size) \n"+
+  "            break; \n"+
   "        weight_sum += kernel[i] * 2.0; \n"+
   "        p += texture2D(sampler, texCoord + delta*float(i)).xyz * kernel[i]; \n"+
   "        p += texture2D(sampler, texCoord - delta*float(i)).xyz * kernel[i]; \n"+
