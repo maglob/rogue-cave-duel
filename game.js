@@ -26,11 +26,12 @@ function gameUpdate(state, input, config, dt) {
       s.pos = [0, 0]
       s.v = [0, 0]
     }
-    if (input.fire) {
+    if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
       var shot = new Sprite()
       shot.pos = s.pos.add(vectorFromAngle(s.angle).mul(config.shotStartDistance))
       shot.v = s.v.add(vectorFromAngle(s.angle).mul(config.shotSpeed))
       state.shots.push(shot)
+      state.lastShotTime = state.time
     }
     if (input.left)
       s.angle += config.turnSpeed * dt
@@ -59,7 +60,8 @@ function gameUpdate(state, input, config, dt) {
     rocks: state.rocks.filter(function(s) { return !s.removed }),
     ships: state.ships,
     shots: state.shots.filter(function(s) { return !s.removed }),
-    thrustParticles: state.thrustParticles.update(dt)
+    thrustParticles: state.thrustParticles.update(dt),
+    lastShotTime: state.lastShotTime
   }
 }
 
@@ -89,7 +91,8 @@ function gameInitialize() {
       )
     ],
     shots: [],
-    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, .6, Math.PI/2.5, Math.PI, 6, 50)
+    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, .6, Math.PI/2.5, Math.PI, 6, 50),
+    lastShotTime: 0
   }
 }
 

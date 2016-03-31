@@ -9,8 +9,9 @@ window.onload = function() {
     backgroundColor: [.1, .1, .1, 1],
     shotColor: [1, 1, 1, 1],
     thrustColor: [.2, .2, .2, 1],
-    shotSpeed: 100,
+    shotSpeed: 150,
     shotStartDistance: 20,
+    shotDelay: 0.3,
     vertexBufferSize: 8192
   }
   var gc = gfxInitialize(document.getElementById('canvas'), shaders, config)
