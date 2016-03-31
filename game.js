@@ -11,8 +11,13 @@ function gameUpdate(state, input, config, dt) {
   state.shots.forEach(function (s) {
     var oldPos = s.pos
     s.pos = s.pos.add(s.v.mul(dt))
-    if (state.cave.intersects(new Edge(oldPos, s.pos)))
+    var edge = new Edge(oldPos, s.pos)
+    if (state.cave.intersects(edge))
       collisions.push({a: null, b: s})
+    state.rocks.forEach(function(rock) {
+      if (rock.mesh.translate(rock.pos).intersects(edge))
+        collisions.push({a: rock, b: s})
+    })
   })
 
   state.ships.forEach(function (s) {
@@ -41,7 +46,9 @@ function gameUpdate(state, input, config, dt) {
   })
 
   collisions.forEach(function(col) {
-    if (col.a == null && col.b.mesh == null)
+    if (col.a != null)
+      col.a.removed = true
+    if (col.b != null)
       col.b.removed = true
   })
 
@@ -49,7 +56,7 @@ function gameUpdate(state, input, config, dt) {
     frame: state.frame + 1,
     time: state.time + dt,
     cave: state.cave,
-    rocks: state.rocks,
+    rocks: state.rocks.filter(function(s) { return !s.removed }),
     ships: state.ships,
     shots: state.shots.filter(function(s) { return !s.removed }),
     thrustParticles: state.thrustParticles.update(dt)
