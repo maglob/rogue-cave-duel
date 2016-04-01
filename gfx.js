@@ -2,6 +2,9 @@
 function gfxRender(gl, ctx, config, state) {
   var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
 
+  var offset = state.ships[0].pos.mul(-1)
+  baseMatrix = baseMatrix.mul(Matrix.translate(offset[0], offset[1]))
+
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
   withProgram(ctx.program, function(prg) {
