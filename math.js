@@ -67,11 +67,15 @@ function Matrix() {
     [0, 0, 1]]
 }
 
-Matrix.translate = function(x, y) {
+Matrix.translate = function(v) {
   var m = new Matrix()
-  m.data[0][2] = x
-  m.data[1][2] = y
+  m.data[0][2] = v[0]
+  m.data[1][2] = v[1]
   return m
+}
+
+Matrix.prototype.translate = function(v) {
+  return this.mul(Matrix.translate(v))
 }
 
 Matrix.scale = function(x, y) {
@@ -79,6 +83,10 @@ Matrix.scale = function(x, y) {
   m.data[0][0] = x
   m.data[1][1] = y
   return m
+}
+
+Matrix.prototype.scale = function(x, y) {
+  return this.mul(Matrix.scale(x,y ))
 }
 
 Matrix.rotate = function(a) {
@@ -90,6 +98,10 @@ Matrix.rotate = function(a) {
   m.data[1][0] = sa
   m.data[1][1] = ca
   return m
+}
+
+Matrix.prototype.rotate = function(a) {
+  return this.mul(Matrix.rotate(a))
 }
 
 Matrix.prototype.transpose = function() {

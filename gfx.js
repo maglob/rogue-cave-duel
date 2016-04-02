@@ -1,9 +1,6 @@
 
 function gfxRender(gl, ctx, config, state) {
-  var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height)
-
-  var offset = state.ships[0].pos.mul(-1)
-  baseMatrix = baseMatrix.mul(Matrix.translate(offset[0], offset[1]))
+  var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height).translate(state.ships[0].pos.mul(-1))
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
@@ -70,7 +67,7 @@ function gfxRender(gl, ctx, config, state) {
 
   function drawSprite(color, sprite) {
     gl.uniform4fv(ctx.program.uniform.color, new Float32Array(color))
-    var matrix = baseMatrix.mul(Matrix.translate(sprite.pos[0], sprite.pos[1])).mul(Matrix.rotate(sprite.angle))
+    var matrix = baseMatrix.translate(sprite.pos).rotate(sprite.angle)
     gl.uniformMatrix3fv(ctx.program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
     drawArray(sprite.mesh.vertices, ctx.program.attribute.pos, gl.LINE_LOOP)
   }
