@@ -91,7 +91,10 @@ shaders = {
   "uniform vec4 color; \n"+
   " \n"+
   "void main() { \n"+
-  "    gl_FragColor = color; \n"+
+  "    if (distance(vec2(0.5, 0.5), gl_PointCoord) < 0.5) \n"+
+  "        gl_FragColor = color; \n"+
+  "    else \n"+
+  "        discard; \n"+
   "} \n"+
   "",
   'particle.vert':
