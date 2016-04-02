@@ -8,7 +8,7 @@ window.onload = function() {
     rockColor: [1, 0, 0, 1],
     backgroundColor: [.1, .1, .1, 1],
     shotColor: [1, 1, 1, 1],
-    thrustColor: [.2, .2, .2, 1],
+    thrustColor: [.25, .3, .1, 1],
     shotSpeed: 150,
     shotStartDistance: 20,
     shotDelay: 0.3,

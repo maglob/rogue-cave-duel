@@ -101,12 +101,11 @@ shaders = {
   "#version 100 \n"+
   " \n"+
   "uniform mat3 matrix; \n"+
-  "uniform float size; \n"+
-  "attribute vec2 pos; \n"+
+  "attribute vec3 data; \n"+
   " \n"+
   "void main() { \n"+
-  "    gl_Position = vec4(matrix * vec3(pos, 1), 1); \n"+
-  "    gl_PointSize = size; \n"+
+  "    gl_Position = vec4(matrix * vec3(data.xy, 1), 1); \n"+
+  "    gl_PointSize = data[2]; \n"+
   "} \n"+
   ""
 }

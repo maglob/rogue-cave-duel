@@ -1,10 +1,9 @@
 #version 100
 
 uniform mat3 matrix;
-uniform float size;
-attribute vec2 pos;
+attribute vec3 data;
 
 void main() {
-    gl_Position = vec4(matrix * vec3(pos, 1), 1);
-    gl_PointSize = size;
+    gl_Position = vec4(matrix * vec3(data.xy, 1), 1);
+    gl_PointSize = data[2];
 }

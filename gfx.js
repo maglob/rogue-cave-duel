@@ -18,14 +18,12 @@ function gfxRender(gl, ctx, config, state) {
   withProgram(ctx.programParticle, function(prg) {
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.shotColor))
-    gl.uniform1f(prg.uniform.size, 3)
     gl.uniformMatrix3fv(prg.uniform.matrix, false, baseMatrix.transpose().data.flatten())
-    drawArray(state.shots.map(function (s) { return s.pos }), prg.attribute.pos, gl.POINTS)
+    drawArray(state.shots.map(function (s) { return s.pos.concat(4) }), prg.attribute.data, gl.POINTS)
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.thrustColor))
-    gl.uniform1f(prg.uniform.size, 4)
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.ONE, gl.ONE)
-    drawArray(state.thrustParticles.particles.map(function(p) { return p.pos }), prg.attribute.pos, gl.POINTS)
+    drawArray(state.thrustParticles.particles.map(function(p) { return p.pos.concat(p.ttl/.1+2) }), prg.attribute.data, gl.POINTS)
     gl.disable(gl.BLEND)
   })
 
@@ -112,7 +110,7 @@ function gfxInitialize(canvas, shaders, config) {
   })
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
-    programParticle: createProgram(shaders['particle.vert'], shaders['particle.frag'], ['color', 'matrix', 'size'], ['pos']),
+    programParticle: createProgram(shaders['particle.vert'], shaders['particle.frag'], ['color', 'matrix'], ['data']),
     effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
     effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
     effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),

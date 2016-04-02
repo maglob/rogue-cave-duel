@@ -91,7 +91,7 @@ function gameInitialize() {
       )
     ],
     shots: [],
-    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, .6, Math.PI/2.5, Math.PI, 6, 50),
+    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, .8, Math.PI/2.2, Math.PI, 6, 50),
     lastShotTime: 0
   }
 }
