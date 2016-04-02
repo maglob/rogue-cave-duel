@@ -9,6 +9,7 @@ window.onload = function() {
     backgroundColor: [.1, .1, .1, 1],
     shotColor: [1, 1, 1, 1],
     thrustColor: [.25, .3, .1, 1],
+    explosionColor: [.2, .15, .05, 1],
     shotSpeed: 150,
     shotStartDistance: 20,
     shotDelay: 0.3,
@@ -60,6 +61,7 @@ window.onload = function() {
       case 16:
       case 87: this.thrust = isDown; break;
       case 32: this.pauseToggle = isDown; break;
+      case 49: this.debug = isDown; break;
       case 70:
         var el = document.getElementById('game')
         var fullscreen = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen

@@ -41,6 +41,8 @@ function gameUpdate(state, input, config, dt) {
       s.v = s.v.add(vectorFromAngle(s.angle).mul(200 * dt))
       state.thrustParticles.emit(s, 3)
     }
+    if (input.debug)
+      state.explosions.emit(new Sprite(null, vectorFromAngle(Math.random()*Math.PI*2).mul(30)), 5)
     s.v = s.v.add(config.gravity.mul(dt))
     s.v = s.v.mul(Math.pow(1 - config.friction, dt))
     s.pos = s.pos.add(s.v.mul(dt))
@@ -61,6 +63,7 @@ function gameUpdate(state, input, config, dt) {
     ships: state.ships,
     shots: state.shots.filter(function(s) { return !s.removed }),
     thrustParticles: state.thrustParticles.update(dt),
+    explosions: state.explosions.update(dt),
     lastShotTime: state.lastShotTime
   }
 }
@@ -92,6 +95,7 @@ function gameInitialize() {
     ],
     shots: [],
     thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, .8, Math.PI/2.2, Math.PI, 6, 50),
+    explosions: new ParticleSystem(1000, [0,0], 0.8, 0.7, Math.PI*2, 0, 5, 100),
     lastShotTime: 0
   }
 }

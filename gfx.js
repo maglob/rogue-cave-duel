@@ -24,6 +24,8 @@ function gfxRender(gl, ctx, config, state) {
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.ONE, gl.ONE)
     drawArray(state.thrustParticles.particles.map(function(p) { return p.pos.concat(p.ttl/.1+2) }), prg.attribute.data, gl.POINTS)
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.explosionColor))
+    drawArray(state.explosions.particles.map(function(p) { return p.pos.concat(p.ttl/.01) }), prg.attribute.data, gl.POINTS)
     gl.disable(gl.BLEND)
   })
 
