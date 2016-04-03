@@ -40,10 +40,10 @@ function gameUpdate(state, input, config, dt) {
       s.angle -= config.turnSpeed * dt
     if (input.thrust) {
       s.v = s.v.add(vectorFromAngle(s.angle).mul(200 * dt))
-      state.thrustParticles.emit(s, 3)
+      state.thrustParticles.emit(3, s)
     }
     if (input.debug)
-      state.explosions.emit(new Sprite(null, vectorFromAngle(Math.random()*Math.PI*2).mul(30)), 5)
+      state.explosions.emit(5)
     s.v = s.v.add(config.gravity.mul(dt))
     s.v = s.v.mul(Math.pow(1 - config.friction, dt))
     s.pos = s.pos.add(s.v.mul(dt))
@@ -95,8 +95,8 @@ function gameInitialize() {
       )
     ],
     shots: [],
-    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, .8, Math.PI/2.2, Math.PI, 6, 50),
-    explosions: new ParticleSystem(1000, [0,0], 0.8, 0.7, Math.PI*2, 0, 5, 100),
+    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, 50),
+    explosions: new ParticleSystem(1000, [0,0], 0.8, genUniform(0.35, 0.7), genUniform(0, Math.PI*2), genUniform(0, 30), 100),
     lastShotTime: 0
   }
 }
@@ -147,26 +147,30 @@ Mesh.prototype.intersects = function(other) {
   return false
 }
 
-function ParticleSystem(maxCount, gravity, friction, ttl, spread, angle, initialDistance, initialSpeed) {
+function ParticleSystem(maxCount, gravity, friction, ttl, angle, distance, speed) {
   this.maxCount = maxCount || 100
   this.gravity = gravity || [0, 0]
   this.friction = friction || 0
-  this.ttl = ttl || 1
-  this.spread = spread || Math.PI * 2
-  this.angle = angle || 0
-  this.initialSpeed = initialSpeed || 0
-  this.initialDistance = initialDistance || 0
+  this.ttl = wrap(ttl)
+  this.angle = wrap(angle)
+  this.distance = wrap(distance)
+  this.speed = wrap(speed)
   this.particles = []
+
+  function wrap(val) {
+    return typeof val === 'function' ? val : function() { return val }
+  }
 }
 
-ParticleSystem.prototype.emit = function (parent, n) {
+ParticleSystem.prototype.emit = function (n, parent) {
   n = n || 1
+  parent = parent || new Sprite()
   while (n-- > 0 && this.particles.length < this.maxCount) {
     var s = new Sprite()
-    var a = parent.angle + this.angle + Math.random()*this.spread - this.spread/2
-    s.pos = parent.pos.add(vectorFromAngle(a).mul(this.initialDistance))
-    s.v = parent.v.add(vectorFromAngle(a).mul(this.initialSpeed))
-    s.ttl = this.ttl - Math.random()*this.ttl/2
+    var a = parent.angle + this.angle()
+    s.pos = parent.pos.add(vectorFromAngle(a).mul(this.distance()))
+    s.v = parent.v.add(vectorFromAngle(a).mul(this.speed()))
+    s.ttl = this.ttl()
     this.particles.push(s)
   }
 }

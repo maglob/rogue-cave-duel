@@ -171,3 +171,9 @@ function bezierPath(controlPoints, segmentCount) {
       .add(cp[3].mul(Math.pow(t, 3)))
   }
 }
+
+function genUniform(min, max) {
+  return function() {
+    return Math.random() * (max - min) + min
+  }
+}
