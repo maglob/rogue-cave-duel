@@ -17,9 +17,13 @@ function gfxRender(gl, ctx, config, state) {
 
   withProgram(ctx.programParticle, function(prg) {
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
-    gl.uniform4fv(prg.uniform.color, new Float32Array(config.shotColor))
     gl.uniformMatrix3fv(prg.uniform.matrix, false, baseMatrix.transpose().data.flatten())
-    drawArray(state.shots.map(function (s) { return s.pos.concat(4) }), prg.attribute.data, gl.POINTS)
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.shotTrailColor))
+    drawArray(state.shots.map(function (s) {
+      return [s.pos.add(s.unitV.mul(-3)).concat(4), s.pos.add(s.unitV.mul(-5)).concat(2), s.pos.add(s.unitV.mul(-7)).concat(1)]
+    }).flatten(), prg.attribute.data, gl.POINTS)
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.shotColor))
+    drawArray(state.shots.map(function (s) { return s.pos.concat(5) }), prg.attribute.data, gl.POINTS)
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.thrustColor))
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.ONE, gl.ONE)

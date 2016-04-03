@@ -7,10 +7,11 @@ window.onload = function() {
     shipColor: [1, 1, 1, 1],
     rockColor: [1, 0, 0, 1],
     backgroundColor: [.1, .1, .1, 1],
-    shotColor: [1, 1, 1, 1],
+    shotColor: [.7, .7, 1, 1],
+    shotTrailColor: [.4, .4,.8, 1],
     thrustColor: [.25, .3, .1, 1],
     explosionColor: [.2, .15, .05, 1],
-    shotSpeed: 150,
+    shotSpeed: 200,
     shotStartDistance: 20,
     shotDelay: 0.3,
     vertexBufferSize: 8192

@@ -28,8 +28,9 @@ function gameUpdate(state, input, config, dt) {
     }
     if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
       var shot = new Sprite()
-      shot.pos = s.pos.add(vectorFromAngle(s.angle).mul(config.shotStartDistance))
-      shot.v = s.v.add(vectorFromAngle(s.angle).mul(config.shotSpeed))
+      shot.unitV = vectorFromAngle(s.angle)
+      shot.pos = s.pos.add(shot.unitV.mul(config.shotStartDistance))
+      shot.v = s.v.add(shot.unitV.mul(config.shotSpeed))
       state.shots.push(shot)
       state.lastShotTime = state.time
     }
