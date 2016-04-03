@@ -22,9 +22,7 @@ function gameUpdate(state, input, config, dt) {
 
   state.ships.forEach(function (s) {
     if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
-      s.angle = Math.PI / 2
-      s.pos = [0, 0]
-      s.v = [0, 0]
+      collisions.push({a: null, b: s})
     }
     if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
       var shot = new Sprite()
@@ -54,6 +52,15 @@ function gameUpdate(state, input, config, dt) {
       col.a.removed = true
     if (col.b != null)
       col.b.removed = true
+    if (col.a instanceof Sprite && col.a.mesh)
+      state.explosions.emit(30, new Sprite(null, col.a.pos))
+    if (col.b instanceof Sprite && col.b.mesh)
+      state.explosions.emit(30, new Sprite(null, col.b.pos))
+    if (col.b instanceof Sprite && state.ships.indexOf(col.b) >= 0) {
+      col.b.angle = Math.PI / 2
+      col.b.pos = [0, 0]
+      col.b.v = [0, 0]
+    }
   })
 
   return {
@@ -96,7 +103,7 @@ function gameInitialize() {
     ],
     shots: [],
     thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, 50),
-    explosions: new ParticleSystem(1000, [0,0], 0.8, genUniform(0.35, 0.7), genUniform(0, Math.PI*2), genUniform(0, 30), 100),
+    explosions: new ParticleSystem(1000, [0,0], 0.95, genUniform(0.35, 0.7), genUniform(0, Math.PI*2), genUniform(0, 30), 100),
     lastShotTime: 0
   }
 }

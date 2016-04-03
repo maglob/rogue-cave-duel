@@ -10,7 +10,7 @@ window.onload = function() {
     shotColor: [.7, .7, 1, 1],
     shotTrailColor: [.4, .4,.8, 1],
     thrustColor: [.25, .3, .1, 1],
-    explosionColor: [.2, .15, .05, 1],
+    explosionColor: [.2, .4, .05, 1],
     shotSpeed: 200,
     shotStartDistance: 20,
     shotDelay: 0.3,
