@@ -42,8 +42,7 @@ window.onload = function() {
       input.pauseToggle = false
     }
     if (!pause) {
-      state = gameUpdate(state, input, config, 1 / 60)
-      gc.render(state)
+      state = gc.render(gameUpdate(state, input, config, 1 / 60))
       document.getElementById('fps').textContent = (1 / avgFrameTime * 1000).toFixed()
     }
     window.requestAnimationFrame(tick.bind(null, state))
