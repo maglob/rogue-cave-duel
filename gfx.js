@@ -7,6 +7,10 @@ function gfxRender(gl, ctx, config, state) {
   withProgram(ctx.program, function(prg) {
     gl.clearColor.apply(gl, config.backgroundColor)
     gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveBackgroundColor))
+    var triangles = new Mesh(state.cave.vertices).triangles()
+    drawArray(triangles.flatten(), prg.attribute.pos, gl.TRIANGLES)
+
     gl.lineWidth(2)
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveColor))
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
