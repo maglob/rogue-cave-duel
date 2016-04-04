@@ -4,12 +4,20 @@ function gfxRender(gl, ctx, config, state) {
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+  gl.enable(gl.STENCIL_TEST)
+
   withProgram(ctx.program, function(prg) {
     gl.clearColor.apply(gl, config.backgroundColor)
-    gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
+
+    var caveTriangles = new Mesh(state.cave.vertices).triangles().flatten()
+    makeStencil(function() {
+      gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveBackgroundColor))
+      drawArray(caveTriangles, prg.attribute.pos, gl.TRIANGLES)
+    })
+
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveBackgroundColor))
-    var triangles = new Mesh(state.cave.vertices).triangles()
-    drawArray(triangles.flatten(), prg.attribute.pos, gl.TRIANGLES)
+    drawArray(caveTriangles, prg.attribute.pos, gl.TRIANGLES)
 
     gl.lineWidth(2)
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveColor))
@@ -37,6 +45,8 @@ function gfxRender(gl, ctx, config, state) {
     gl.disable(gl.BLEND)
   })
 
+  gl.disable(gl.STENCIL_TEST)
+
   gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[2].id)
   gl.viewport(0, 0, ctx.framebuffers[2].width, ctx.framebuffers[2].height)
   withProgram(ctx.program, function(prg) {
@@ -53,6 +63,18 @@ function gfxRender(gl, ctx, config, state) {
   gl.blendFunc(gl.ONE, gl.ONE)
   doBlur(ctx.framebuffers[3], null, [0, 1.0/gl.canvas.height])
   gl.disable(gl.BLEND)
+
+  function makeStencil(fn) {
+    gl.stencilMask(0x1)
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE)
+    gl.colorMask(false, false, false, false)
+    gl.stencilFunc(gl.ALWAYS, 1, 0)
+    fn()
+    gl.colorMask(true, true, true, true)
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP)
+    gl.stencilFunc(gl.EQUAL, 1, 0x1)
+    gl.stencilMask(0)
+  }
 
   function doBlur(srcFramebuffer, destFramebuffer, delta) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, destFramebuffer ? destFramebuffer.id : null)
@@ -102,7 +124,10 @@ function gfxRender(gl, ctx, config, state) {
 }
 
 function gfxInitialize(canvas, shaders, config) {
-  var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
+  var options = {
+    stencil: true
+  }
+  var gl = canvas.getContext("webgl", options) || canvas.getContext("experimental-webgl", options)
   var framebuffers = range(4).map(function(i) {
     var id = gl.createFramebuffer()
     var texture = gl.createTexture()
