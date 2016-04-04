@@ -14,6 +14,7 @@ window.onload = function() {
     explosionColor: [.2, .4, .05, 1],
     shotSpeed: 200,
     shotStartDistance: 20,
+    shotTtl: 4,
     shotDelay: 0.3,
     vertexBufferSize: 8192
   }

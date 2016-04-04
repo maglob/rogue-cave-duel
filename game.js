@@ -1,6 +1,4 @@
 function gameUpdate(state, input, config, dt) {
-  var collisions = []
-
   state.rocks.forEach(function (s) {
     s.pos = s.pos.add(s.v.mul(dt))
     s.angle += s.angleV * dt
@@ -9,23 +7,15 @@ function gameUpdate(state, input, config, dt) {
   })
 
   state.shots.forEach(function (s) {
-    var oldPos = s.pos
+    s.oldPos = s.pos
     s.pos = s.pos.add(s.v.mul(dt))
-    var edge = new Edge(oldPos, s.pos)
-    if (state.cave.intersects(edge))
-      collisions.push({a: null, b: s})
-    state.rocks.forEach(function(rock) {
-      if (rock.mesh.translate(rock.pos).intersects(edge))
-        collisions.push({a: rock, b: s})
-    })
+    s.ttl -= dt
   })
 
   state.ships.forEach(function (s) {
-    if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
-      collisions.push({a: null, b: s})
-    }
     if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
       var shot = new Sprite()
+      shot.ttl = config.shotTtl
       shot.unitV = vectorFromAngle(s.angle)
       shot.pos = s.pos.add(shot.unitV.mul(config.shotStartDistance))
       shot.v = s.v.add(shot.unitV.mul(config.shotSpeed))
@@ -40,39 +30,57 @@ function gameUpdate(state, input, config, dt) {
       s.v = s.v.add(vectorFromAngle(s.angle).mul(200 * dt))
       state.thrustParticles.emit(3, s)
     }
-    if (input.debug)
-      state.explosions.emit(5)
     s.v = s.v.add(config.gravity.mul(dt))
     s.v = s.v.mul(Math.pow(1 - config.friction, dt))
     s.pos = s.pos.add(s.v.mul(dt))
   })
 
-  collisions.forEach(function(col) {
-    if (col.a != null)
-      col.a.removed = true
-    if (col.b != null)
-      col.b.removed = true
-    if (col.a instanceof Sprite && col.a.mesh)
-      state.explosions.emit(30, new Sprite(null, col.a.pos))
-    if (col.b instanceof Sprite && col.b.mesh)
-      state.explosions.emit(30, new Sprite(null, col.b.pos))
-    if (col.b instanceof Sprite && state.ships.indexOf(col.b) >= 0) {
-      col.b.angle = Math.PI / 2
-      col.b.pos = [0, 0]
-      col.b.v = [0, 0]
-    }
+  detectCollisions().forEach(function(pair) {
+    pair.forEach(function(s) {
+      if (s) {
+        s.ttl = -1
+        if (s.mesh)
+          state.explosions.emit(30, new Sprite(null, s.pos))
+      }
+      if (state.ships.indexOf(s) >= 0) {
+        s.angle = Math.PI / 2
+        s.pos = [0, 0]
+        s.v = [0, 0]
+      }
+    })
   })
 
   return {
     frame: state.frame + 1,
     time: state.time + dt,
     cave: state.cave,
-    rocks: state.rocks.filter(function(s) { return !s.removed }),
+    rocks: state.rocks.filter(function(s) { return s.ttl >= 0 }),
     ships: state.ships,
-    shots: state.shots.filter(function(s) { return !s.removed }),
+    shots: state.shots.filter(function(s) { return s.ttl >= 0 }),
     thrustParticles: state.thrustParticles.update(dt),
     explosions: state.explosions.update(dt),
     lastShotTime: state.lastShotTime
+  }
+
+  function detectCollisions() {
+    var collisions = []
+    state.shots.forEach(function (s) {
+      if (s.oldPos) {
+        var edge = new Edge(s.oldPos, s.pos)
+        if (state.cave.intersects(edge))
+          collisions.push([null, s])
+        state.rocks.forEach(function (rock) {
+          if (rock.mesh.translate(rock.pos).intersects(edge))
+            collisions.push([rock, s])
+        })
+      }
+    })
+    state.ships.forEach(function (s) {
+      if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
+        collisions.push([null, s])
+      }
+    })
+    return collisions
   }
 }
 
@@ -114,6 +122,7 @@ function Sprite(mesh, pos, v, angle, angleV) {
   this.v = v || [0, 0]
   this.angle = angle || 0
   this.angleV = angleV || 0
+  this.ttl = 0
 }
 
 function Mesh(vertices) {
