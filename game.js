@@ -123,6 +123,39 @@ function Mesh(vertices) {
   })
 }
 
+Mesh.prototype.triangles = function() {
+  var res = []
+  var vert = this.vertices.slice()
+
+  range(vert.length - 3).forEach(function () {
+    var v = range(vert.length).filter(isConvex).reduce(function (a, b) {
+      return vertexDot(a) > vertexDot(b) ? a : b
+    })
+    res.push(triangle(v))
+    vert.splice(v, 1)
+  })
+
+  return res.concat([triangle(1)])
+
+  function triangle(i) {
+    return [prevVertex(i), vert[i], nextVertex(i)]
+  }
+
+  function isConvex(i) {
+    var a = prevVertex(i)
+    var b = vert[i]
+    var c = nextVertex(i)
+    return (a[0]*b[1] - b[0]*a[1]) + (b[0]*c[1] - c[0]*b[1]) + (c[0]*a[1] - c[1]*a[0]) < 0
+  }
+
+  function vertexDot(i) {
+    return prevVertex(i).sub(vert[i]).unit().dot(nextVertex(i).sub(vert[i]).unit())
+  }
+  function nextVertex(i) { return vert[(i + 1) % vert.length] }
+  function prevVertex(i) { return vert[(vert.length + i - 1) % vert.length] }
+}
+
+
 Mesh.prototype.scale = function(x) {
   return new Mesh(this.vertices.map(function(e) {
     return e.mul(x)
