@@ -67,7 +67,7 @@ function gameUpdate(state, input, config, dt) {
     state.shots.forEach(function (s) {
       if (s.oldPos) {
         var edge = new Edge(s.oldPos, s.pos)
-        if (state.cave.intersects(edge))
+        if (state.cave.mesh.intersects(edge))
           collisions.push([null, s])
         state.rocks.forEach(function (rock) {
           if (rock.mesh.translate(rock.pos).intersects(edge))
@@ -76,7 +76,7 @@ function gameUpdate(state, input, config, dt) {
       }
     })
     state.ships.forEach(function (s) {
-      if (state.cave.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
+      if (state.cave.mesh.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
         collisions.push([null, s])
       }
     })
@@ -88,14 +88,17 @@ function gameInitialize() {
   var meshRock = new Mesh(regularPolygon(8))
   var meshShip = new Mesh([[-7, 10], [18, 0], [-7, -10], [-2, -4], [-2, 4]])
   var ship = new Sprite(meshShip, [0, 0], [0, 0], Math.PI/2)
-
+  var cavePoints = [
+    [-400, -300], [-300, 0], [-350, 100], [-100, 200], [0, 320], [100, 280], [400, 230], [500, 0], [400, -50],
+    [300, 0], [200, -100], [50, -50], [0, -70], [-100, -200], [-150, -300], [-300, -350]
+  ]
   return {
     frame: 0,
     time: 0,
-    cave: new Mesh(bezierPath([
-      [-400, -300], [-300, 0], [-350, 100], [-100, 200], [0, 320], [100, 280], [400, 230], [500, 0], [400, -50],
-      [300, 0], [200, -100], [50, -50], [0, -70], [-100, -200], [-150, -300], [-300, -350]
-    ], 8)),
+    cave: {
+      points: cavePoints,
+      mesh: new Mesh(bezierPath(cavePoints, 8))
+    },
     ships: [ship],
     rocks: [
       new Sprite(
