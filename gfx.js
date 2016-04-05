@@ -1,6 +1,6 @@
 
 function gfxRender(gl, ctx, config, state) {
-  var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height).translate(state.ships[0].pos.mul(-1))
+  var baseMatrix = Matrix.scale(2 / gl.canvas.width, 2 / gl.canvas.height).translate(state.offset.mul(-1))
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
@@ -168,6 +168,9 @@ function gfxInitialize(canvas, shaders, config) {
         gl.bindTexture(gl.TEXTURE_2D, fb.texture)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, fb.width, fb.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
       })
+    },
+    getSize: function() {
+      return [canvas.width, canvas.height]
     }
   }
 

@@ -59,7 +59,8 @@ function gameUpdate(state, input, config, dt) {
     shots: state.shots.filter(function(s) { return s.ttl >= 0 }),
     thrustParticles: state.thrustParticles.update(dt),
     explosions: state.explosions.update(dt),
-    lastShotTime: state.lastShotTime
+    lastShotTime: state.lastShotTime,
+    offset: state.ships[0].pos
   }
 
   function detectCollisions() {
@@ -115,7 +116,8 @@ function gameInitialize() {
     shots: [],
     thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, 50),
     explosions: new ParticleSystem(1000, [0,0], 0.95, genUniform(0.35, 0.7), genUniform(0, Math.PI*2), genUniform(0, 30), 100),
-    lastShotTime: 0
+    lastShotTime: 0,
+    offset: [0, 0]
   }
 }
 

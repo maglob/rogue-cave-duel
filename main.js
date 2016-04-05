@@ -23,11 +23,15 @@ window.onload = function() {
     left: false,
     right: false,
     thrust: false,
-    pauseToggle: false
+    pauseToggle: false,
+    mousePos: [0, 0]
   }
   window.addEventListener('resize', resize)
   window.addEventListener('keydown', readkeys.bind(input, true))
   window.addEventListener('keyup', readkeys.bind(input, false))
+  window.addEventListener('mousemove', function(e) {
+    input.mousePos = [e.clientX, e.clientY]
+  })
 
   resize()
   var pause = false
@@ -44,10 +48,19 @@ window.onload = function() {
     }
     if (!pause) {
       state = gc.render(gameUpdate(state, input, config, 1 / 60))
-      document.getElementById('fps').textContent = (1 / avgFrameTime * 1000).toFixed()
     }
+    var pos = viewToWorld(input.mousePos, state.offset, gc.getSize())
+    document.getElementById('fps').textContent =
+      (1 / avgFrameTime * 1000).toFixed() + " (" +
+      pos[0].toFixed() + ", " +
+      pos[1].toFixed() + ")"
     window.requestAnimationFrame(tick.bind(null, state))
   })(gameInitialize())
+
+  function viewToWorld(v, offset, viewSize) {
+    v = [v[0], -v[1]]
+    return v.add(offset).sub([viewSize[0]/2, -viewSize[1]/2])
+  }
 
   function resize() {
     gc.resize(window.innerWidth, window.innerHeight)
