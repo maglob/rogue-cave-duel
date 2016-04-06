@@ -23,6 +23,8 @@ window.onload = function() {
     left: false,
     right: false,
     thrust: false,
+    up: false,
+    down: false,
     pause: false,
     mousePos: [0, 0],
     editMode: false
@@ -43,6 +45,16 @@ window.onload = function() {
       avgFrameTime = avgFrameTime * .8 + (time - prevTime) * .2
     prevTime = time
     state.mode = input.editMode ? Mode.EDIT : Mode.GAME
+    if (state.mode == Mode.EDIT) {
+      if (input.up)
+        state.offset = state.offset.add([0, 8])
+      if (input.down)
+        state.offset = state.offset.add([0, -8])
+      if (input.right)
+        state.offset = state.offset.add([8, 0])
+      if (input.left)
+        state.offset = state.offset.add([-8, 0])
+    }
     if (!input.pause && state.mode == Mode.GAME)
       state = gc.render(gameUpdate(state, input, config, 1 / 60))
     else if (state.mode == Mode.EDIT)
@@ -67,12 +79,12 @@ window.onload = function() {
   function readkeys(isDown, e) {
     var preventDefault = true
     switch (e.keyCode) {
-      case 13:
-      case 83: this.fire = isDown; break;
+      case 13: this.fire = isDown; break;
+      case 83: this.down = this.fire = isDown; break;
       case 65: this.left = isDown; break;
       case 68: this.right = isDown; break;
-      case 16:
-      case 87: this.thrust = isDown; break;
+      case 16: this.thrust = isDown; break;
+      case 87: this.up = this.thrust = isDown; break;
       case 32:
         if (!isDown)
           this.pause = !this.pause
