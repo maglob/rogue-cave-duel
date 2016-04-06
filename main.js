@@ -23,8 +23,9 @@ window.onload = function() {
     left: false,
     right: false,
     thrust: false,
-    pauseToggle: false,
-    mousePos: [0, 0]
+    pause: false,
+    mousePos: [0, 0],
+    editMode: false
   }
   window.addEventListener('resize', resize)
   window.addEventListener('keydown', readkeys.bind(input, true))
@@ -34,7 +35,6 @@ window.onload = function() {
   })
 
   resize()
-  var pause = false
   var prevTime = 0
   var avgFrameTime = 1 / 60 * 1000;
 
@@ -42,13 +42,11 @@ window.onload = function() {
     if (prevTime)
       avgFrameTime = avgFrameTime * .8 + (time - prevTime) * .2
     prevTime = time
-    if (input.pauseToggle) {
-      pause = !pause
-      input.pauseToggle = false
-    }
-    if (!pause) {
+    state.mode = input.editMode ? Mode.EDIT : Mode.GAME
+    if (!input.pause && state.mode == Mode.GAME)
       state = gc.render(gameUpdate(state, input, config, 1 / 60))
-    }
+    else if (state.mode == Mode.EDIT)
+      gc.render(state)
     var pos = viewToWorld(input.mousePos, state.offset, gc.getSize())
     document.getElementById('fps').textContent =
       (1 / avgFrameTime * 1000).toFixed() + " (" +
@@ -75,8 +73,18 @@ window.onload = function() {
       case 68: this.right = isDown; break;
       case 16:
       case 87: this.thrust = isDown; break;
-      case 32: this.pauseToggle = isDown; break;
-      case 49: this.debug = isDown; break;
+      case 32:
+        if (!isDown)
+          this.pause = !this.pause
+        break;
+      case 49:
+        if (!isDown)
+          this.editMode = false;
+        break;
+      case 50:
+        if (!isDown)
+          this.editMode = true;
+        break;
       case 70:
         var el = document.getElementById('game')
         var fullscreen = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen

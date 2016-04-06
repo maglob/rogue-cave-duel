@@ -1,3 +1,9 @@
+Mode = {
+  ATTRACT: 1,
+  GAME: 2,
+  EDIT: 3
+}
+
 function gameUpdate(state, input, config, dt) {
   state.rocks.forEach(function (s) {
     s.pos = s.pos.add(s.v.mul(dt))
@@ -51,6 +57,7 @@ function gameUpdate(state, input, config, dt) {
   })
 
   return {
+    mode: state.mode,
     frame: state.frame + 1,
     time: state.time + dt,
     cave: state.cave,
@@ -94,6 +101,7 @@ function gameInitialize() {
     [300, 0], [200, -100], [50, -50], [0, -70], [-100, -200], [-150, -300], [-300, -350]
   ]
   return {
+    mode: Mode.GAME,
     frame: 0,
     time: 0,
     cave: {
