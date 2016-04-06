@@ -150,7 +150,8 @@ function bezierPath(controlPoints, segmentCount) {
     var p = controlPoints.slice(i, i+4)
     switch (p.length) {
       case 1:
-        p.push(controlPoints[0].add(p[0]).mul(1/3), controlPoints[0].add(p[0]).mul(2/3), controlPoints[0])
+        var v = controlPoints[0].sub(p[0])
+        p.push(p[0].add(v.mul(1/3)), p[0].add(v.mul(2/3)), controlPoints[0])
         break;
       case 2:
         p.push(controlPoints[0].add(p[1]).mul(.5), controlPoints[0]);
