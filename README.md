@@ -14,9 +14,11 @@ Game controls
 * Pause - Space
 * Fullscreen mode - F
 
-Other commands
+Editor commands
 * Game mode - 1
 * Edit mode - 2
+* Scroll screen with WASD keys
+* Drag control points with mouse
 
 
 Concept
