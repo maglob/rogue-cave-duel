@@ -35,8 +35,15 @@ window.onload = function() {
   window.addEventListener('mousemove', function(e) {
     input.mousePos = [e.clientX, e.clientY]
   })
+  window.addEventListener('mousedown', function() {
+    input.mouseDown = true
+  })
+  window.addEventListener('mouseup', function() {
+    input.mouseDown = false
+  })
 
   resize()
+  var selection = null
   var prevTime = 0
   var avgFrameTime = 1 / 60 * 1000;
 
@@ -59,11 +66,26 @@ window.onload = function() {
       state = gc.render(gameUpdate(state, input, config, 1 / 60))
     else if (state.mode == Mode.EDIT)
       gc.render(state)
-    var pos = viewToWorld(input.mousePos, state.offset, gc.getSize())
+    var mousePos = viewToWorld(input.mousePos, state.offset, gc.getSize())
+    if (input.mouseDown) {
+      if (selection == null) {
+        var v = state.cave.points.reduce(function (a, b) {
+          return mousePos.sub(a).norm() < mousePos.sub(b).norm() ? a : b
+        })
+        if (v.sub(mousePos).norm() < 8)
+          selection = state.cave.points.indexOf(v)
+      }
+      if (selection >= 0) {
+        state.cave.points[selection] = mousePos
+        state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
+      }
+    } else
+      selection = null
+
     document.getElementById('fps').textContent =
       (1 / avgFrameTime * 1000).toFixed() + " (" +
-      pos[0].toFixed() + ", " +
-      pos[1].toFixed() + ")"
+      mousePos[0].toFixed() + ", " +
+      mousePos[1].toFixed() + ")"
     window.requestAnimationFrame(tick.bind(null, state))
   })(gameInitialize())
 
