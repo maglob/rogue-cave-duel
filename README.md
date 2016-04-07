@@ -15,11 +15,9 @@ Game controls
 * Fullscreen mode - F
 
 Editor commands
-* Game mode - 1
-* Edit mode - 2
+* Toggle between game and edit mode by pressing 1
 * Scroll screen with WASD keys
 * Drag control points with mouse
-
 
 Concept
 * Playable locally with a modern browser

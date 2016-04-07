@@ -27,7 +27,7 @@ window.onload = function() {
     down: false,
     pause: false,
     mousePos: [0, 0],
-    editMode: false
+    modeToggle: false
   }
   window.addEventListener('resize', resize)
   window.addEventListener('keydown', readkeys.bind(input, true))
@@ -51,7 +51,10 @@ window.onload = function() {
     if (prevTime)
       avgFrameTime = avgFrameTime * .8 + (time - prevTime) * .2
     prevTime = time
-    state.mode = input.editMode ? Mode.EDIT : Mode.GAME
+    if (input.modeToggle) {
+      state.mode = state.mode == Mode.GAME ? Mode.EDIT : Mode.GAME
+      input.modeToggle = false
+    }
     if (state.mode == Mode.EDIT) {
       if (input.up)
         state.offset = state.offset.add([0, 8])
@@ -113,11 +116,7 @@ window.onload = function() {
         break;
       case 49:
         if (!isDown)
-          this.editMode = false;
-        break;
-      case 50:
-        if (!isDown)
-          this.editMode = true;
+          this.modeToggle = true;
         break;
       case 70:
         var el = document.getElementById('game')
