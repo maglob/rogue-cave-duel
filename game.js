@@ -150,11 +150,14 @@ Mesh.prototype.triangles = function() {
   var vert = this.vertices.slice()
 
   range(vert.length - 3).forEach(function () {
-    var v = range(vert.length).filter(isConvex).reduce(function (a, b) {
-      return vertexDot(a) > vertexDot(b) ? a : b
-    })
-    res.push(triangle(v))
-    vert.splice(v, 1)
+    var convexVertices = range(vert.length).filter(isConvex)
+    if (convexVertices.length > 0) {
+      var v = convexVertices.reduce(function (a, b) {
+        return vertexDot(a) > vertexDot(b) ? a : b
+      })
+      res.push(triangle(v))
+      vert.splice(v, 1)
+    }
   })
 
   return res.concat([triangle(1)])
