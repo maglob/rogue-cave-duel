@@ -84,6 +84,27 @@ window.onload = function() {
       }
     } else
       selection = null
+    if (input.remove) {
+      var v = state.cave.points.reduce(function (a, b) {
+        return mousePos.distance(a) < mousePos.distance(b) ? a : b
+      })
+      if (mousePos.distance(v) < 8) {
+        state.cave.points.splice(state.cave.points.indexOf(v), 1)
+        state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
+      }
+      input.remove = false
+    }
+    if (input.add) {
+      var edge = new Mesh(state.cave.points).edges.reduce(function (a,b) {
+        return a.distance(mousePos) < b.distance(mousePos) ? a : b
+      })
+      if (edge.distance(mousePos) < 8) {
+        var idx = state.cave.points.indexOf(edge.b)
+        state.cave.points.splice(idx, 0, mousePos)
+        state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
+      }
+      input.add = false
+    }
 
     document.getElementById('fps').textContent =
       (1 / avgFrameTime * 1000).toFixed() + " (" +
@@ -110,14 +131,10 @@ window.onload = function() {
       case 68: this.right = isDown; break;
       case 16: this.thrust = isDown; break;
       case 87: this.up = this.thrust = isDown; break;
-      case 32:
-        if (!isDown)
-          this.pause = !this.pause
-        break;
-      case 49:
-        if (!isDown)
-          this.modeToggle = true;
-        break;
+      case 69: if (!isDown) this.add = true; break;
+      case 81: if (!isDown) this.remove = true; break;
+      case 32: if (!isDown) this.pause = !this.pause; break;
+      case 49: if (!isDown) this.modeToggle = true; break;
       case 70:
         var el = document.getElementById('game')
         var fullscreen = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen

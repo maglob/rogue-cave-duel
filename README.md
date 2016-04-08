@@ -18,6 +18,8 @@ Editor commands
 * Toggle between game and edit mode by pressing 1
 * Scroll screen with WASD keys
 * Drag control points with mouse
+* Add control point - E
+* Remove control point - Q
 
 Concept
 * Playable locally with a modern browser
