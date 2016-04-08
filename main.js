@@ -73,9 +73,9 @@ window.onload = function() {
     if (input.mouseDown) {
       if (selection == null) {
         var v = state.cave.points.reduce(function (a, b) {
-          return mousePos.sub(a).norm() < mousePos.sub(b).norm() ? a : b
+          return mousePos.distance(a) < mousePos.distance(b) ? a : b
         })
-        if (v.sub(mousePos).norm() < 8)
+        if (mousePos.distance(v) < 8)
           selection = state.cave.points.indexOf(v)
       }
       if (selection >= 0) {

@@ -39,6 +39,10 @@ Array.prototype.rotate = function(a) {
   return [this[0]*ca - this[1]*sa, this[0]*sa + this[1]*ca]
 }
 
+Array.prototype.distance = function(other) {
+  return this.sub(other).norm()
+}
+
 function vectorFromAngle(a) {
   return [Math.cos(a), Math.sin(a)]
 }
@@ -142,6 +146,17 @@ Edge.prototype.inside = function(pos) {
 
 Edge.prototype.intersects = function(other) {
   return this.inside(other.a) != this.inside(other.b)  &&  other.inside(this.a) != other.inside(this.b)
+}
+
+Edge.prototype.distance = function(pos) {
+  var toPos = pos.sub(this.a)
+  var t = toPos.dot(this.unit)
+  if (t < 0)
+    return pos.distance(this.a)
+  else if (t > this.vector.norm())
+    return pos.distance(this.b)
+  else
+    return pos.distance(this.a.add(this.unit.mul(t)))
 }
 
 function bezierPath(controlPoints, segmentCount) {
