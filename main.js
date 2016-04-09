@@ -43,7 +43,6 @@ window.onload = function() {
   })
 
   resize()
-  var selection = null
   var prevTime = 0
   var avgFrameTime = 1 / 60 * 1000;
 
@@ -55,61 +54,12 @@ window.onload = function() {
       state.mode = state.mode == Mode.GAME ? Mode.EDIT : Mode.GAME
       input.modeToggle = false
     }
-    if (state.mode == Mode.EDIT) {
-      if (input.up)
-        state.offset = state.offset.add([0, 8])
-      if (input.down)
-        state.offset = state.offset.add([0, -8])
-      if (input.right)
-        state.offset = state.offset.add([8, 0])
-      if (input.left)
-        state.offset = state.offset.add([-8, 0])
-    }
+    input.mouseWorldPos = viewToWorld(input.mousePos, state.offset, gc.getSize())
     if (!input.pause && state.mode == Mode.GAME)
       state = gc.render(gameUpdate(state, input, config, 1 / 60))
     else if (state.mode == Mode.EDIT)
-      gc.render(state)
-    var mousePos = viewToWorld(input.mousePos, state.offset, gc.getSize())
-    if (input.mouseDown) {
-      if (selection == null) {
-        var v = state.cave.points.reduce(function (a, b) {
-          return mousePos.distance(a) < mousePos.distance(b) ? a : b
-        })
-        if (mousePos.distance(v) < 8)
-          selection = state.cave.points.indexOf(v)
-      }
-      if (selection >= 0) {
-        state.cave.points[selection] = mousePos
-        state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
-      }
-    } else
-      selection = null
-    if (input.remove) {
-      var v = state.cave.points.reduce(function (a, b) {
-        return mousePos.distance(a) < mousePos.distance(b) ? a : b
-      })
-      if (mousePos.distance(v) < 8) {
-        state.cave.points.splice(state.cave.points.indexOf(v), 1)
-        state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
-      }
-      input.remove = false
-    }
-    if (input.add) {
-      var edge = new Mesh(state.cave.points).edges.reduce(function (a,b) {
-        return a.distance(mousePos) < b.distance(mousePos) ? a : b
-      })
-      if (edge.distance(mousePos) < 8) {
-        var idx = state.cave.points.indexOf(edge.b)
-        state.cave.points.splice(idx, 0, mousePos)
-        state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
-      }
-      input.add = false
-    }
-
-    document.getElementById('fps').textContent =
-      (1 / avgFrameTime * 1000).toFixed() + " (" +
-      mousePos[0].toFixed() + ", " +
-      mousePos[1].toFixed() + ")"
+      state = gc.render(editorUpdate(state, input, config))
+    document.getElementById('fps').textContent = (1 / avgFrameTime * 1000).toFixed()
     window.requestAnimationFrame(tick.bind(null, state))
   })(gameInitialize())
 
