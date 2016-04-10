@@ -1,4 +1,7 @@
 function editorUpdate(state, input) {
+  if (!state.editor)
+    state.editor = {}
+
   if (input.up)
     state.offset = state.offset.add([0, 8])
   if (input.down)
@@ -9,19 +12,19 @@ function editorUpdate(state, input) {
     state.offset = state.offset.add([-8, 0])
 
   if (input.mouseDown) {
-    if (selection == null) {
+    if (state.editor.selection == null) {
       var v = state.cave.points.reduce(function (a, b) {
         return input.mouseWorldPos.distance(a) < input.mouseWorldPos.distance(b) ? a : b
       })
       if (input.mouseWorldPos.distance(v) < 8)
-        selection = state.cave.points.indexOf(v)
+        state.editor.selection = state.cave.points.indexOf(v)
     }
-    if (selection >= 0) {
-      state.cave.points[selection] = input.mouseWorldPos
+    if (state.editor.selection >= 0) {
+      state.cave.points[state.editor.selection] = input.mouseWorldPos
       state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
     }
   } else
-    selection = null
+    state.editor.selection = null
 
   if (input.remove) {
     var v = state.cave.points.reduce(function (a, b) {
