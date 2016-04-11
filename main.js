@@ -27,7 +27,8 @@ window.onload = function() {
     down: false,
     pause: false,
     mousePos: [0, 0],
-    modeToggle: false
+    modeToggle: false,
+    printCave: false
   }
   window.addEventListener('resize', resize)
   window.addEventListener('keydown', readkeys.bind(input, true))
@@ -85,6 +86,7 @@ window.onload = function() {
       case 81: if (!isDown) this.remove = true; break;
       case 32: if (!isDown) this.pause = !this.pause; break;
       case 49: if (!isDown) this.modeToggle = true; break;
+      case 80: if (!isDown) this.printCave = true; break;
       case 70:
         var el = document.getElementById('game')
         var fullscreen = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen

@@ -11,6 +11,15 @@ function editorUpdate(state, input) {
   if (input.left)
     state.offset = state.offset.add([-8, 0])
 
+  if (input.printCave) {
+    var s = ''
+    state.cave.points.forEach(function(p, i) {
+      s += (i>0 ? ',' : '') + '[' + p[0].toFixed() + ',' + p[1].toFixed() + ']'
+    })
+    console.log('[' + s + ']')
+    input.printCave = false
+  }
+
   if (input.mouseDown) {
     if (state.editor.selection == null) {
       var v = state.cave.points.reduce(function (a, b) {

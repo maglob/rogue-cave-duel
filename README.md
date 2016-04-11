@@ -20,6 +20,7 @@ Editor commands
 * Drag control points with mouse
 * Add control point - E
 * Remove control point - Q
+* Print cave points to console - P
 
 Concept
 * Playable locally with a modern browser
