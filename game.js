@@ -84,9 +84,14 @@ function gameUpdate(state, input, config, dt) {
       }
     })
     state.ships.forEach(function (s) {
-      if (state.cave.mesh.intersects(s.mesh.rotate(s.angle).translate(s.pos))) {
+      var shipMesh = s.mesh.rotate(s.angle).translate(s.pos)
+      if (state.cave.mesh.intersects(shipMesh)) {
         collisions.push([null, s])
       }
+      state.rocks.forEach(function(rock) {
+        if (rock.mesh.rotate(rock.angle).translate(rock.pos).intersects(shipMesh))
+          collisions.push([rock, s])
+      })
     })
     return collisions
   }
