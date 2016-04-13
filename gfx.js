@@ -25,6 +25,7 @@ function gfxRender(gl, ctx, config, state) {
     drawArray(state.cave.mesh.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
+    state.debris.forEach(drawSprite.bind(null, config.debrisColor))
   })
 
   withProgram(ctx.programParticle, function(prg) {

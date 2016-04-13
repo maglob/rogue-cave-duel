@@ -7,6 +7,7 @@ window.onload = function() {
     caveBackgroundColor: [0, 0, 0, 1],
     shipColor: [1, 1, 1, 1],
     rockColor: [1, 0, 0, 1],
+    debrisColor: [.5, .5, .5, 1],
     backgroundColor: [.3, .1, .1, 1],
     shotColor: [.7, .7, 1, 1],
     shotTrailColor: [.4, .4,.8, 1],

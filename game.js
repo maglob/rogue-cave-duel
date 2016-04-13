@@ -18,6 +18,14 @@ function gameUpdate(state, input, config, dt) {
     s.ttl -= dt
   })
 
+  state.debris.forEach(function (s) {
+    s.v = s.v.add(config.gravity.mul(dt))
+    s.v = s.v.mul(Math.pow(1 - config.friction, dt))
+    s.pos = s.pos.add(s.v.mul(dt))
+    s.angle += s.angleV * dt
+    s.ttl -= dt
+  })
+
   state.ships.forEach(function (s) {
     if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
       var shot = new Sprite()
@@ -45,8 +53,18 @@ function gameUpdate(state, input, config, dt) {
     pair.forEach(function(s) {
       if (s) {
         s.ttl = -1
-        if (s.mesh)
+        if (s.mesh) {
           state.explosions.emit(30, new Sprite(null, s.pos))
+          s.mesh.edges.forEach(function(e) {
+            var mp = e.a.add(e.vector.mul(genUniform(.1,.9)()))
+            var debris = new Sprite(new Mesh([e.a.sub(mp), e.b.sub(mp)]), s.pos.add(mp))
+            debris.v = vectorFromAngle(genUniform(0,Math.PI*2)()).mul(genUniform(50, 100)())
+            debris.angle = s.angle
+            debris.angleV = genUniform(1, 6)()
+            debris.ttl = genUniform(.5, 3)()
+            state.debris.push(debris)
+          })
+        }
       }
       if (state.ships.indexOf(s) >= 0) {
         s.angle = Math.PI / 2
@@ -64,6 +82,7 @@ function gameUpdate(state, input, config, dt) {
     rocks: state.rocks.filter(function(s) { return s.ttl >= 0 }),
     ships: state.ships,
     shots: state.shots.filter(function(s) { return s.ttl >= 0 }),
+    debris: state.debris.filter(function(s) { return s.ttl >= 0 }),
     thrustParticles: state.thrustParticles.update(dt),
     explosions: state.explosions.update(dt),
     lastShotTime: state.lastShotTime,
@@ -125,6 +144,7 @@ function gameInitialize() {
       )
     ],
     shots: [],
+    debris: [],
     thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, 50),
     explosions: new ParticleSystem(1000, [0,0], 0.95, genUniform(0.35, 0.7), genUniform(0, Math.PI*2), genUniform(0, 30), 100),
     lastShotTime: 0,
