@@ -166,6 +166,10 @@ function Mesh(vertices) {
   this.edges = range(vertices.length).map(function(i) {
     return new Edge(vertices[i], vertices[(i+1) % vertices.length])
   })
+  this.vertexNormals = this.edges.map(function(e, i, edges) {
+    var n2 = edges[(edges.length + i - 1) % edges.length].normal
+    return e.normal.add(n2).mul(.5)
+  })
 }
 
 Mesh.prototype.triangles = function() {
