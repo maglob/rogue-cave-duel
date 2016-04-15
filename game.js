@@ -226,6 +226,13 @@ Mesh.prototype.rotate = function(a) {
   }))
 }
 
+Mesh.prototype.grow = function(factor) {
+  var self = this
+  return new Mesh(this.vertices.map(function(e, i) {
+    return e.add(self.vertexNormals[i].mul(factor))
+  }))
+}
+
 Mesh.prototype.intersects = function(other) {
   for(var i=0; i<this.edges.length; i++)
     if (other instanceof Edge) {
