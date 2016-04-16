@@ -61,6 +61,10 @@ function gfxRender(gl, ctx, config, state) {
       drawArray(state.cave.points, prg.attribute.pos, gl.LINE_LOOP)
       var marker = new Mesh(regularPolygon(4)).scale(8)
       state.cave.points.map(function(p) { return new Sprite(marker, p)}).forEach(drawSprite.bind(null, [1, 1, 0, 1]))
+      if (state.editor.hover != null) {
+        gl.lineWidth(3)
+        drawSprite([1, 1, 0, 1], new Sprite(marker, state.cave.points[state.editor.hover]))
+      }
     })
   } else {
     gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[2].id)

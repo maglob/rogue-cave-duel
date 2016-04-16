@@ -20,18 +20,19 @@ function editorUpdate(state, input) {
     input.printCave = false
   }
 
+  var v = state.cave.points.reduce(function (a, b) {
+    return input.mouseWorldPos.distance(a) < input.mouseWorldPos.distance(b) ? a : b
+  })
+  if (input.mouseWorldPos.distance(v) < 8)
+    state.editor.hover = state.cave.points.indexOf(v)
+  else
+    state.editor.hover = null
+
   if (input.mouseDown) {
-    if (state.editor.selection == null) {
-      var v = state.cave.points.reduce(function (a, b) {
-        return input.mouseWorldPos.distance(a) < input.mouseWorldPos.distance(b) ? a : b
-      })
-      if (input.mouseWorldPos.distance(v) < 8)
-        state.editor.selection = state.cave.points.indexOf(v)
-    }
-    if (state.editor.selection >= 0) {
-      state.cave.points[state.editor.selection] = input.mouseWorldPos
-      state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
-    }
+    if (state.editor.selection == null && state.editor.hover != null)
+      state.editor.selection = state.editor.hover
+    state.cave.points[state.editor.selection] = input.mouseWorldPos
+    state.cave.mesh = new Mesh(bezierPath(state.cave.points, 8))
   } else
     state.editor.selection = null
 
