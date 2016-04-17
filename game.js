@@ -27,23 +27,7 @@ function gameUpdate(state, input, config, dt) {
   })
 
   state.ships.forEach(function (s) {
-    if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
-      var shot = new Sprite()
-      shot.ttl = config.shotTtl
-      shot.unitV = vectorFromAngle(s.angle)
-      shot.pos = s.pos.add(shot.unitV.mul(config.shotStartDistance))
-      shot.v = s.v.add(shot.unitV.mul(config.shotSpeed))
-      state.shots.push(shot)
-      state.lastShotTime = state.time
-    }
-    if (input.left)
-      s.angle += config.turnSpeed * dt
-    if (input.right)
-      s.angle -= config.turnSpeed * dt
-    if (input.thrust) {
-      s.v = s.v.add(vectorFromAngle(s.angle).mul(200 * dt))
-      state.thrustParticles.emit(3, s)
-    }
+    s.update(state, input, config, dt)
     s.v = s.v.add(config.gravity.mul(dt))
     s.v = s.v.mul(Math.pow(1 - config.friction, dt))
     s.pos = s.pos.add(s.v.mul(dt))
@@ -120,7 +104,39 @@ function gameInitialize() {
   var meshRock = new Mesh(regularPolygon(8))
   var meshShip = new Mesh([[-7, 10], [18, 0], [-7, -10], [-2, -4], [-2, 4]])
   var ship = new Sprite(meshShip, [0, 0], [0, 0], Math.PI/2)
+  var bot = new Sprite(meshShip, [100, 0], [0, 0], Math.PI/2)
   var cavePoints = [[-400,-300],[-300,0],[-350,100],[-100,200],[0,320],[100,280],[400,230],[429,167],[411,67],[367,-11],[355,-91],[473,-20],[599,111],[805,183],[838,68],[901,-113],[1078,-324],[972,-541],[785,-593],[645,-670],[725,-1110],[536,-1202],[238,-1276],[15,-1130],[-119,-948],[-123,-791],[-134,-488],[175,-352],[472,-476],[664,-398],[659,-306],[655,-126],[597,-62],[541,-53],[350,-365],[250,-256],[200,-100],[50,-50],[0,-70],[-100,-200],[-150,-300],[-300,-350]]
+
+  ship.update = function(state, input, config, dt) {
+    if (input.fire && (state.time - state.lastShotTime > config.shotDelay)) {
+      var shot = new Sprite()
+      shot.ttl = config.shotTtl
+      shot.unitV = vectorFromAngle(this.angle)
+      shot.pos = this.pos.add(shot.unitV.mul(config.shotStartDistance))
+      shot.v = this.v.add(shot.unitV.mul(config.shotSpeed))
+      state.shots.push(shot)
+      state.lastShotTime = state.time
+    }
+    if (input.left)
+      this.angle += config.turnSpeed * dt
+    if (input.right)
+      this.angle -= config.turnSpeed * dt
+    if (input.thrust) {
+      this.v = this.v.add(vectorFromAngle(this.angle).mul(200 * dt))
+      state.thrustParticles.emit(3, this)
+    }
+  }
+
+  bot.update = function(state, input, config, dt) {
+    if (this.v[1] < 0 && this.pos[1] < 0)
+      this.thrust = true
+    if (this.v[1] > 40)
+      this.thrust = false
+    if (this.thrust) {
+      this.v = this.v.add(vectorFromAngle(this.angle).mul(200 * dt))
+      state.thrustParticles.emit(3, this)
+    }
+  }
 
   return {
     mode: Mode.GAME,
@@ -130,7 +146,7 @@ function gameInitialize() {
       points: cavePoints,
       mesh: new Mesh(bezierPath(cavePoints, 8))
     },
-    ships: [ship],
+    ships: [ship, bot],
     rocks: [
       new Sprite(
         meshRock.scale(50),
