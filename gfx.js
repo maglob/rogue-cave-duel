@@ -23,12 +23,6 @@ function gfxRender(gl, ctx, config, state) {
     gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveColor))
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
     drawArray(state.cave.mesh.vertices, prg.attribute.pos, gl.LINE_LOOP)
-    drawArray(state.cave.mesh.grow(-20).vertices, prg.attribute.pos, gl.LINE_LOOP)
-    drawArray(range(state.cave.mesh.vertices.length).map(function(i) {
-      var v = state.cave.mesh.vertices[i]
-      var n = state.cave.mesh.vertexNormals[i]
-      return [v, v.add(n.mul(-20))]
-    }).flatten(), prg.attribute.pos, gl.LINES)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.rocks.forEach(drawSprite.bind(null, config.rockColor))
     state.debris.forEach(drawSprite.bind(null, config.debrisColor))
