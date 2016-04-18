@@ -104,7 +104,7 @@ function gameInitialize() {
   var meshRock = new Mesh(regularPolygon(8))
   var meshShip = new Mesh([[-7, 10], [18, 0], [-7, -10], [-2, -4], [-2, 4]])
   var ship = new Sprite(meshShip, [0, 0], [0, 0], Math.PI/2)
-  var bot = new Sprite(meshShip, [100, 0], [0, 0], Math.PI/2)
+  var bot = new Sprite(meshShip, [-100, -50], [0, 0], Math.PI/2)
   var cavePoints = [[-400,-300],[-300,0],[-350,100],[-100,200],[0,320],[100,280],[400,230],[429,167],[411,67],[367,-11],[355,-91],[473,-20],[599,111],[805,183],[838,68],[901,-113],[1078,-324],[972,-541],[785,-593],[645,-670],[725,-1110],[536,-1202],[238,-1276],[15,-1130],[-119,-948],[-123,-791],[-134,-488],[175,-352],[472,-476],[664,-398],[659,-306],[655,-126],[597,-62],[541,-53],[350,-365],[250,-256],[200,-100],[50,-50],[0,-70],[-100,-200],[-150,-300],[-300,-350]]
 
   ship.update = function(state, input, config, dt) {
@@ -128,10 +128,18 @@ function gameInitialize() {
   }
 
   bot.update = function(state, input, config, dt) {
-    if (this.v[1] < 0 && this.pos[1] < 0)
-      this.thrust = true
-    if (this.v[1] > 40)
+    var targetPos = [200, 100]
+    var heading = targetPos.sub(this.pos).unit()
+    var dot = heading.dot(vectorFromAngle(this.angle))
+    if (dot < .95) {
+      if (heading.orto().dot(vectorFromAngle(this.angle)) > 0)
+        this.angle -= config.turnSpeed * dt
+      else
+        this.angle += config.turnSpeed * dt
       this.thrust = false
+    } else {
+      this.thrust = this.v.norm() < 60 || this.v[1] < 0
+    }
     if (this.thrust) {
       this.v = this.v.add(vectorFromAngle(this.angle).mul(200 * dt))
       state.thrustParticles.emit(3, this)
