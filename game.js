@@ -270,6 +270,28 @@ Mesh.prototype.intersects = function(other) {
   return false
 }
 
+Mesh.prototype.boundingBox = function() {
+  var first = this.vertices[0]
+  var box = this.vertices.reduce(function(box, e) {
+    return {
+      maxX: Math.max(box.maxX, e[0]),
+      minX: Math.min(box.minX, e[0]),
+      maxY: Math.max(box.maxY, e[1]),
+      minY: Math.min(box.minY, e[1])
+    }
+  }, {
+      maxX: first[0],
+      minX: first[0],
+      maxY: first[1],
+      minY: first[1]
+    }
+  )
+  return {
+    pos: [box.minX, box.minY],
+    size: [box.maxX - box.minX, box.maxY - box.minY]
+  }
+}
+
 function ParticleSystem(maxCount, gravity, friction, ttl, angle, distance, speed) {
   this.maxCount = maxCount || 100
   this.gravity = gravity || [0, 0]
