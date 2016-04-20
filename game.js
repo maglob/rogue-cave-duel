@@ -39,6 +39,7 @@ function gameUpdate(state, input, config, dt) {
         s.ttl = -1
         if (s.mesh) {
           state.explosions.emit(30, new Sprite(null, s.pos))
+          state.shards.emit(100, new Sprite(null, s.pos))
           s.mesh.edges.forEach(function(e) {
             var mp = e.a.add(e.vector.mul(genUniform(.1,.9)()))
             var debris = new Sprite(new Mesh([e.a.sub(mp), e.b.sub(mp)]), s.pos.add(mp))
@@ -69,6 +70,7 @@ function gameUpdate(state, input, config, dt) {
     debris: state.debris.filter(function(s) { return s.ttl >= 0 }),
     thrustParticles: state.thrustParticles.update(dt, state.cave.mesh.edges),
     explosions: state.explosions.update(dt),
+    shards: state.shards.update(dt, state.cave.mesh.edges),
     lastShotTime: state.lastShotTime,
     offset: state.ships[0].pos
   }
@@ -169,8 +171,9 @@ function gameInitialize() {
     ],
     shots: [],
     debris: [],
-    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, 50),
-    explosions: new ParticleSystem(1000, [0,0], 0.95, genUniform(0.35, 0.7), genUniform(0, Math.PI*2), genUniform(0, 30), 100),
+    thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, genUniform(40, 50)),
+    explosions: new ParticleSystem(1000, [0,0], 0.95, genUniform(0.45,.9), genUniform(0, Math.PI*2), genUniform(0, 30), genUniform(30, 100)),
+    shards: new ParticleSystem(1000, [0, -120], 0.3, genUniform(1.7, 2.4), genUniform(0, Math.PI*2), genUniform(0, 30), genUniform(50, 100)),
     lastShotTime: 0,
     offset: [0, 0]
   }
