@@ -67,7 +67,7 @@ function gameUpdate(state, input, config, dt) {
     ships: state.ships,
     shots: state.shots.filter(function(s) { return s.ttl >= 0 }),
     debris: state.debris.filter(function(s) { return s.ttl >= 0 }),
-    thrustParticles: state.thrustParticles.update(dt),
+    thrustParticles: state.thrustParticles.update(dt, state.cave.mesh.edges),
     explosions: state.explosions.update(dt),
     lastShotTime: state.lastShotTime,
     offset: state.ships[0].pos
@@ -320,13 +320,22 @@ ParticleSystem.prototype.emit = function (n, parent) {
   }
 }
 
-ParticleSystem.prototype.update = function (dt) {
+ParticleSystem.prototype.update = function (dt, edges) {
   var self = this
+  edges = edges || []
   this.particles.forEach(function (p) {
     p.ttl -= dt
     p.v = p.v.add(self.gravity.mul(dt))
     p.v = p.v.mul(Math.pow(1 - self.friction, dt))
+    p.oldPos = p.pos
     p.pos = p.pos.add(p.v.mul(dt))
+    var edge = new Edge(p.oldPos, p.pos)
+    edges.forEach(function(e) {
+      if (e.intersects(edge)) {
+        p.v = p.v.reflect(e.normal).mul(.7)
+        p.pos = p.oldPos
+      }
+    })
   })
   this.particles = this.particles.filter(function(p) { return p.ttl > 0 })
   return this

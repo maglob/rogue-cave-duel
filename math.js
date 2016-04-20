@@ -43,6 +43,10 @@ Array.prototype.distance = function(other) {
   return this.sub(other).norm()
 }
 
+Array.prototype.reflect = function(normal) {
+  return this.add(normal.mul(this.dot(normal) * -2))
+}
+
 function vectorFromAngle(a) {
   return [Math.cos(a), Math.sin(a)]
 }
