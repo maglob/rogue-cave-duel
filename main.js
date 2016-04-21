@@ -14,6 +14,7 @@ window.onload = function() {
     thrustColor: [.25, .3, .1, 1],
     explosionColor: [.2, .4, .05, 1],
     shardColor: [.4, .8, .1, 1],
+    smallShardColor: [.7, .7, 0, 1],
     shotSpeed: 200,
     shotStartDistance: 20,
     shotTtl: 4,

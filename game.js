@@ -49,6 +49,8 @@ function gameUpdate(state, input, config, dt) {
             debris.ttl = genUniform(.5, 3)()
             state.debris.push(debris)
           })
+        } else {
+          state.smallShards.emit(10, new Sprite(null, s.pos))
         }
       }
       if (state.ships.indexOf(s) >= 0) {
@@ -71,6 +73,7 @@ function gameUpdate(state, input, config, dt) {
     thrustParticles: state.thrustParticles.update(dt, state.cave.mesh.edges),
     explosions: state.explosions.update(dt),
     shards: state.shards.update(dt, state.cave.mesh.edges),
+    smallShards: state.smallShards.update(dt, state.cave.mesh.edges),
     lastShotTime: state.lastShotTime,
     offset: state.ships[0].pos
   }
@@ -174,6 +177,7 @@ function gameInitialize() {
     thrustParticles: new ParticleSystem(1000, [0, -20], 0.3, genUniform(.4, .8), genUniform(Math.PI-Math.PI/4.4, Math.PI+Math.PI/4.4), 6, genUniform(40, 50)),
     explosions: new ParticleSystem(1000, [0,0], 0.95, genUniform(0.45,.9), genUniform(0, Math.PI*2), genUniform(0, 30), genUniform(30, 100)),
     shards: new ParticleSystem(1000, [0, -120], 0.3, genUniform(1.7, 2.4), genUniform(0, Math.PI*2), genUniform(0, 30), genUniform(50, 100)),
+    smallShards: new ParticleSystem(1000, [0, -60], 0.8, genUniform(.5, 1.2), genUniform(0, Math.PI*2), genUniform(4, 8), genUniform(10, 50)),
     lastShotTime: 0,
     offset: [0, 0]
   }
