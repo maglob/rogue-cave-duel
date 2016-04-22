@@ -8,7 +8,7 @@ window.onload = function() {
     shipColor: [1, 1, 1, 1],
     rockColor: [1, 0, 0, 1],
     debrisColor: [.5, .5, .5, 1],
-    backgroundColor: [.3, .1, .1, 1],
+    backgroundColor: [0, 0, 0, 1],
     shotColor: [.7, .7, 1, 1],
     shotTrailColor: [.4, .4,.8, 1],
     thrustColor: [.25, .3, .1, 1],
