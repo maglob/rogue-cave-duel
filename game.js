@@ -85,9 +85,9 @@ function gameUpdate(state, input, config, dt) {
         var edge = new Edge(s.oldPos, s.pos)
         if (state.cave.mesh.intersects(edge))
           collisions.push([null, s])
-        state.rocks.forEach(function (rock) {
-          if (rock.mesh.translate(rock.pos).intersects(edge))
-            collisions.push([rock, s])
+        state.rocks.concat(state.ships).forEach(function (s2) {
+          if (s2.mesh.translate(s2.pos).intersects(edge))
+            collisions.push([s2, s])
         })
       }
     })
