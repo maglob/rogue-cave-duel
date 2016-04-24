@@ -24,8 +24,13 @@ function gfxRender(gl, ctx, config, state) {
     gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
     drawArray(state.cave.mesh.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
-    state.rocks.forEach(drawSprite.bind(null, config.rockColor))
     state.debris.forEach(drawSprite.bind(null, config.debrisColor))
+    state.rocks.forEach(function(sprite) {
+      gl.uniform4fv(prg.uniform.color, new Float32Array(config.rockColor))
+      var matrix = baseMatrix.translate(sprite.pos).rotate(sprite.angle)
+      gl.uniformMatrix3fv(ctx.program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
+      drawPolygonLine(sprite.mesh, 10)
+    })
   })
 
   withProgram(ctx.programParticle, function(prg) {
@@ -141,6 +146,17 @@ function gfxRender(gl, ctx, config, state) {
     } else {
       throw new Error("vertexBufferSize overflow: " + (data.length * 4) + " > " + config.vertexBufferSize)
     }
+  }
+
+  function drawPolygonLine(mesh, width) {
+    var idx = mesh.vertices.length - 1
+    var lastVertex = mesh.vertices[idx]
+    var lastNormal = mesh.vertexNormals[idx]
+    var points = mesh.vertices.reduce(function(acc, v, i) {
+      var n = mesh.vertexNormals[i]
+      return acc.concat([v.add(n.mul(width/2)), v.add(n.mul(-width/2))])
+    }, [lastVertex.add(lastNormal.mul(width/2)), lastVertex.add(lastNormal.mul(-width/2))])
+    drawArray(points, ctx.program.attribute.pos, gl.TRIANGLE_STRIP)
   }
 }
 
