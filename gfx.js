@@ -25,11 +25,25 @@ function gfxRender(gl, ctx, config, state) {
     drawArray(state.cave.mesh.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.debris.forEach(drawSprite.bind(null, config.debrisColor))
+  })
+
+  withProgram(ctx.programTexture, function(prg) {
+    gl.uniform1i(prg.uniform.sampler, 0)
+    gl.bindTexture(gl.TEXTURE_2D, ctx.texture);
+    var imageData = new Uint8ClampedArray([
+      [31, 0, 0, 1], [63, 0, 0, 1], [63, 0, 0, 1], [255, 0, 0, 1],
+      [255, 0, 0, 1], [63, 0, 0, 1], [63, 0, 0, 1], [31, 0, 0, 1]
+    ].flatten())
+    var image = new ImageData(imageData, 8, 1)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     state.rocks.forEach(function(sprite) {
-      gl.uniform4fv(prg.uniform.color, new Float32Array(config.rockColor))
       var matrix = baseMatrix.translate(sprite.pos).rotate(sprite.angle)
-      gl.uniformMatrix3fv(ctx.program.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
-      drawPolygonLine(sprite.mesh, 10)
+      gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
+      drawTexturedPolygonLine(sprite.mesh, 10)
     })
   })
 
@@ -158,6 +172,17 @@ function gfxRender(gl, ctx, config, state) {
     }, [lastVertex.add(lastNormal.mul(width/2)), lastVertex.add(lastNormal.mul(-width/2))])
     drawArray(points, ctx.program.attribute.pos, gl.TRIANGLE_STRIP)
   }
+
+  function drawTexturedPolygonLine(mesh, width) {
+    var idx = mesh.vertices.length - 1
+    var lastVertex = mesh.vertices[idx]
+    var lastNormal = mesh.vertexNormals[idx]
+    var points = mesh.vertices.reduce(function(acc, v, i) {
+      var n = mesh.vertexNormals[i]
+      return acc.concat([v.add(n.mul(width/2)).concat(0, 0), v.add(n.mul(-width/2)).concat(1, 1)])
+    }, [lastVertex.add(lastNormal.mul(width/2)).concat(0, 0), lastVertex.add(lastNormal.mul(-width/2)).concat(1, 1)])
+    drawArray(points, ctx.programTexture.attribute.vertex, gl.TRIANGLE_STRIP)
+  }
 }
 
 function gfxInitialize(canvas, shaders, config) {
@@ -188,7 +213,8 @@ function gfxInitialize(canvas, shaders, config) {
     effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
     effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),
     framebuffers: framebuffers,
-    vertexBuffer: gl.createBuffer()
+    vertexBuffer: gl.createBuffer(),
+    texture: gl.createTexture()
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, ctx.vertexBuffer)
