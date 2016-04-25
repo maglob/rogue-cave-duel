@@ -183,6 +183,7 @@ function gfxInitialize(canvas, shaders, config) {
   var ctx = {
     program: createProgram(shaders['constant.vert'], shaders['constant.frag'], ['color', 'matrix'], ['pos']),
     programParticle: createProgram(shaders['particle.vert'], shaders['particle.frag'], ['color', 'matrix'], ['data']),
+    programTexture: createProgram(shaders['texture.vert'], shaders['texture.frag'], ['sample', 'matrix'], ['vertex']),
     effectGrayscale: createProgram(shaders['effect.vert'], shaders['grayscale.frag'], ['sampler'], ['vertex']),
     effectDither: createProgram(shaders['effect.vert'], shaders['dither.frag'], ['sampler'], ['vertex']),
     effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),
