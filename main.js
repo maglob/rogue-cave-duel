@@ -63,6 +63,10 @@ window.onload = function() {
       state = gc.render(gameUpdate(state, input, config, 1 / 60))
     else if (state.mode == Mode.EDIT)
       state = gc.render(editorUpdate(state, input, config))
+    if (input.reset) {
+      state = gameInitialize()
+      input.reset = false
+    }
     document.getElementById('fps').textContent = (1 / avgFrameTime * 1000).toFixed()
     window.requestAnimationFrame(tick.bind(null, state))
   })(gameInitialize())
@@ -83,6 +87,7 @@ window.onload = function() {
       case 83: this.down = this.fire = isDown; break;
       case 65: this.left = isDown; break;
       case 68: this.right = isDown; break;
+      case 50:
       case 16: this.thrust = isDown; break;
       case 87: this.up = this.thrust = isDown; break;
       case 69: if (!isDown) this.add = true; break;
@@ -90,6 +95,7 @@ window.onload = function() {
       case 32: if (!isDown) this.pause = !this.pause; break;
       case 49: if (!isDown) this.modeToggle = true; break;
       case 80: if (!isDown) this.printCave = true; break;
+      case 51: if (!isDown) this.reset = true; break;
       case 70:
         var el = document.getElementById('game')
         var fullscreen = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen
