@@ -20,15 +20,17 @@ function gfxRender(gl, ctx, config, state) {
     drawArray(caveTriangles, prg.attribute.pos, gl.TRIANGLES)
 
     gl.lineWidth(2)
-    gl.uniform4fv(prg.uniform.color, new Float32Array(config.caveColor))
-    gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
-    drawArray(state.cave.mesh.vertices, prg.attribute.pos, gl.LINE_LOOP)
     state.ships.forEach(drawSprite.bind(null, config.shipColor))
     state.debris.forEach(drawSprite.bind(null, config.debrisColor))
   })
 
   withProgram(ctx.programTexture, function(prg) {
     gl.uniform1i(prg.uniform.sampler, 0)
+    gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
+    gl.bindTexture(gl.TEXTURE_2D, ctx.caveTexture);
+    gl.disable(gl.STENCIL_TEST)
+    drawTexturedPolygonLine(state.cave.mesh, 10)
+    gl.enable(gl.STENCIL_TEST)
     gl.bindTexture(gl.TEXTURE_2D, ctx.rockTexture);
     state.rocks.forEach(function(sprite) {
       var matrix = baseMatrix.translate(sprite.pos).rotate(sprite.angle)
@@ -73,23 +75,6 @@ function gfxRender(gl, ctx, config, state) {
         drawSprite([1, 1, 0, 1], new Sprite(marker, state.cave.points[state.editor.hover]))
       }
     })
-  } else {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, ctx.framebuffers[2].id)
-    gl.viewport(0, 0, ctx.framebuffers[2].width, ctx.framebuffers[2].height)
-    withProgram(ctx.program, function (prg) {
-      gl.clearColor.apply(gl, [0, 0, 0, 1])
-      gl.clear(gl.COLOR_BUFFER_BIT)
-      gl.lineWidth(2)
-      gl.uniform4fv(prg.uniform.color, new Float32Array([1, 1, .3, 1]))
-      gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(baseMatrix.transpose().data.flatten()))
-      drawArray(state.cave.mesh.vertices, prg.attribute.pos, gl.LINE_LOOP)
-    })
-
-    doBlur(ctx.framebuffers[2], ctx.framebuffers[3], [1.0 / gl.canvas.width, 0])
-    gl.enable(gl.BLEND)
-    gl.blendFunc(gl.ONE, gl.ONE)
-    doBlur(ctx.framebuffers[3], null, [0, 1.0 / gl.canvas.height])
-    gl.disable(gl.BLEND)
   }
 
   return state
@@ -152,17 +137,6 @@ function gfxRender(gl, ctx, config, state) {
     }
   }
 
-  function drawPolygonLine(mesh, width) {
-    var idx = mesh.vertices.length - 1
-    var lastVertex = mesh.vertices[idx]
-    var lastNormal = mesh.vertexNormals[idx]
-    var points = mesh.vertices.reduce(function(acc, v, i) {
-      var n = mesh.vertexNormals[i]
-      return acc.concat([v.add(n.mul(width/2)), v.add(n.mul(-width/2))])
-    }, [lastVertex.add(lastNormal.mul(width/2)), lastVertex.add(lastNormal.mul(-width/2))])
-    drawArray(points, ctx.program.attribute.pos, gl.TRIANGLE_STRIP)
-  }
-
   function drawTexturedPolygonLine(mesh, width) {
     var idx = mesh.vertices.length - 1
     var lastVertex = mesh.vertices[idx]
@@ -204,7 +178,8 @@ function gfxInitialize(canvas, shaders, config) {
     effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),
     framebuffers: framebuffers,
     vertexBuffer: gl.createBuffer(),
-    rockTexture: createGlowTexture(config.rockColor)
+    rockTexture: createGlowTexture(config.rockColor),
+    caveTexture: createGlowTexture(config.caveColor)
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, ctx.vertexBuffer)

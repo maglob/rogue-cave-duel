@@ -3,7 +3,7 @@ window.onload = function() {
     gravity: [0, -30],
     friction: 0.1,
     turnSpeed: 4,
-    caveColor: [.7, .7, 0, 1],
+    caveColor: [.9, .9, 0, 1],
     caveBackgroundColor: [0, 0, 0, 1],
     shipColor: [1, 1, 1, 1],
     rockColor: [1, 0, 0, 1],
