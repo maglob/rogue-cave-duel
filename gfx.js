@@ -204,7 +204,7 @@ function gfxInitialize(canvas, shaders, config) {
     effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),
     framebuffers: framebuffers,
     vertexBuffer: gl.createBuffer(),
-    rockTexture: createGlowTexture()
+    rockTexture: createGlowTexture(config.rockColor)
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, ctx.vertexBuffer)
@@ -227,14 +227,14 @@ function gfxInitialize(canvas, shaders, config) {
     }
   }
 
-  function createGlowTexture() {
+  function createGlowTexture(color) {
     var tex = gl.createTexture()
     gl.bindTexture(gl.TEXTURE_2D, tex);
-    var imageData = new Uint8ClampedArray([
-      [31, 15, 15, 1], [63, 31, 31, 1], [63, 31, 31, 1], [255, 0, 0, 1],
-      [255, 0, 0, 1], [63, 31, 31, 1], [63, 31, 31, 1], [31, 15, 15, 1]
-    ].flatten())
-    var image = new ImageData(imageData, 8, 1)
+    var weights = [255/8, 255/4, 255/3, 255]
+    var data = weights.map(function(w) {
+      return [w * color[0], w * color[1], w * color[2], 255 * color[3]]
+    })
+    var image = new ImageData(new Uint8ClampedArray(data.concat(data.slice().reverse()).flatten()), weights.length * 2, 1)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
