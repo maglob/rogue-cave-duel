@@ -29,17 +29,7 @@ function gfxRender(gl, ctx, config, state) {
 
   withProgram(ctx.programTexture, function(prg) {
     gl.uniform1i(prg.uniform.sampler, 0)
-    gl.bindTexture(gl.TEXTURE_2D, ctx.texture);
-    var imageData = new Uint8ClampedArray([
-      [31, 0, 0, 1], [63, 0, 0, 1], [63, 0, 0, 1], [255, 0, 0, 1],
-      [255, 0, 0, 1], [63, 0, 0, 1], [63, 0, 0, 1], [31, 0, 0, 1]
-    ].flatten())
-    var image = new ImageData(imageData, 8, 1)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, ctx.rockTexture);
     state.rocks.forEach(function(sprite) {
       var matrix = baseMatrix.translate(sprite.pos).rotate(sprite.angle)
       gl.uniformMatrix3fv(prg.uniform.matrix, false, new Float32Array(matrix.transpose().data.flatten()))
@@ -214,7 +204,7 @@ function gfxInitialize(canvas, shaders, config) {
     effectBlur: createProgram(shaders['effect.vert'], shaders['blur.frag'], ['sampler', 'delta', 'kernel', 'kernel_size'], ['vertex']),
     framebuffers: framebuffers,
     vertexBuffer: gl.createBuffer(),
-    texture: gl.createTexture()
+    rockTexture: createGlowTexture()
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, ctx.vertexBuffer)
@@ -235,6 +225,20 @@ function gfxInitialize(canvas, shaders, config) {
     getSize: function() {
       return [canvas.width, canvas.height]
     }
+  }
+
+  function createGlowTexture() {
+    var tex = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    var imageData = new Uint8ClampedArray([
+      [31, 15, 15, 1], [63, 31, 31, 1], [63, 31, 31, 1], [255, 0, 0, 1],
+      [255, 0, 0, 1], [63, 31, 31, 1], [63, 31, 31, 1], [31, 15, 15, 1]
+    ].flatten())
+    var image = new ImageData(imageData, 8, 1)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    return tex
   }
 
   function createProgram(glslVert, glslFrag, uniforms, attributes) {
