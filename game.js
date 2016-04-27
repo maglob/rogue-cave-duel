@@ -199,7 +199,7 @@ function Mesh(vertices) {
   })
   this.vertexNormals = this.edges.map(function(e, i, edges) {
     var n2 = edges[(edges.length + i - 1) % edges.length].normal
-    return e.normal.add(n2).mul(.5)
+    return e.normal.add(n2).mul(.5).unit()
   })
 }
 
